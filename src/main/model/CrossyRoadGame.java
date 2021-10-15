@@ -36,16 +36,12 @@ public class CrossyRoadGame {
      *          instantiates a new ArrayList for cars
      *          calls configureDifficulty and setUpCrossyRoad
      */
-    public CrossyRoadGame(PlayerProfile player) {
+    public CrossyRoadGame(PlayerProfile player, boolean restartLevel) {
 //        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
 //        Console con = System.console();
         this.arcadePlayer = player;
-        if (this.arcadePlayer.getLevelAchieved() > 1) {
-            String choice = System.console().readLine("%1$4s","Would you like to start at level 1 (1) or your "
-                    + "continue where you left off (2) ?");
-            if (choice.equals("1")) {
-                this.currentLevel = 1;
-            }
+        if (restartLevel) {
+            this.currentLevel = 1;
         } else {
             this.currentLevel = this.arcadePlayer.getLevelAchieved();
         }

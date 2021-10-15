@@ -18,7 +18,7 @@ public class CrossyRoadGameTest {
     @BeforeEach
     void setUpTest() {
         testPlayer = new PlayerProfile("testPlayer");
-        testGame = new CrossyRoadGame(testPlayer);
+        testGame = new CrossyRoadGame(testPlayer, false);
     }
 
     @Test
@@ -26,6 +26,17 @@ public class CrossyRoadGameTest {
         assertEquals(testPlayer, testGame.getArcadePlayer());
         assertEquals(1, testGame.getCurrentLevel());
     }
+
+    @Test
+    void testRestartLevel() {
+        testPlayer.increaseLevelAchieved();
+        testGame = new CrossyRoadGame(testPlayer, false);
+        assertEquals(2, testGame.getCurrentLevel());
+        testGame = new CrossyRoadGame(testPlayer, true);
+        assertEquals(1, testGame.getCurrentLevel());
+    }
+
+
 
     @Test
     void testSetUpCrossyRoad() {
@@ -66,6 +77,38 @@ public class CrossyRoadGameTest {
             }
         }
 
+
+        testGame.clearCars();
+        testGame.setNumCars(testGame.getGameHeight());
+        testGame.generateCars(testGame.getNumCars());
+        testGame.getCars().add(new CrossyRoadCar(0, 0, 2, 3, 1, "right"));
+        for (int i = 0; i < CrossyRoadGame.GAME_WIDTH / 2; i++) {
+            testGame.moveCars();
+        }
+        assertEquals("FAILED", testGame.getGameStatus());
+
+        for (int i = 0; i < testGame.getNumCars(); i++) {
+            CrossyRoadCar nextCar = testGame.getCars().get(i);
+            if (nextCar.getCarPositionY() == 0) {
+                CrossyRoadCar newCar = new CrossyRoadCar(0, 1, 2, 3, 1, "right");
+                testGame.getCars().set(i, newCar);
+                for (int j = 0; j < CrossyRoadGame.GAME_WIDTH + 1; j++) {
+                    testGame.moveCars();
+
+                    assertFalse(testGame.isCarOutOfBoundary(newCar));
+                }
+                testGame.moveCars();
+                assertTrue(testGame.isCarOutOfBoundary(newCar));
+            }
+        }
+
+    {
+
+    }
+
+
+
+
     }
 
     @Test
@@ -93,6 +136,8 @@ public class CrossyRoadGameTest {
         testCar.moveCar();
         assertFalse(testGame.checkCollision(testCar));
     }
+
+
 
     @Test
     void testGenerateCoordinateYList() {

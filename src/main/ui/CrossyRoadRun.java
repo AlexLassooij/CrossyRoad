@@ -27,10 +27,14 @@ public class CrossyRoadRun {
      */
     public CrossyRoadRun(PlayerProfile player) {
         System.out.println(player.getPlayerName() + " is playing !\n");
-        this.crossyRoadGame = new CrossyRoadGame(player);
-        this.isTimerRunning = false;
         this.scanner = new Scanner(System.in);
         this.scanner.useDelimiter("\n");
+        System.out.println("Would you like to start at level 1 (1) or "
+                + "continue where you left off (2) ?");
+        String choice = this.scanner.next();
+        boolean restartLevel = choice.equals("1");
+        this.crossyRoadGame = new CrossyRoadGame(player, restartLevel);
+        this.isTimerRunning = false;
         addTimer();
     }
 

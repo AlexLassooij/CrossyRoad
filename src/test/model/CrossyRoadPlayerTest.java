@@ -51,5 +51,9 @@ public class CrossyRoadPlayerTest {
                 "w", 5));
         assertEquals(CrossyRoadGame.GAME_WIDTH - 1, testCrossyRoadPlayer.checkBoundariesAndMove(
                 "d", CrossyRoadGame.GAME_WIDTH - 1));
+        assertEquals(CrossyRoadGame.GAME_WIDTH - 1, testCrossyRoadPlayer.checkBoundariesAndMove(
+                "d", CrossyRoadGame.GAME_WIDTH - 2));
+        assertEquals(10, testCrossyRoadPlayer.checkBoundariesAndMove(
+                "test", 10));
     }
 }
