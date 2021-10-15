@@ -46,7 +46,6 @@ public class CrossyRoadCar {
      * REQUIRES: movementDirection is one of "right" or "left"
      * MODIFIES: this
      * EFFECTS: moves the car's head one unit to the left or right
-     *          prints out the car's X and Y coordinates after moving
      */
     public void moveCar() {
         if (this.movementDirection.equals("left")) {
@@ -54,8 +53,7 @@ public class CrossyRoadCar {
         } else {
             this.headPositionX += 1;
         }
-        System.out.println("Car " + this.carIdentifier + "'s head is at X: "
-                + this.headPositionX + " Y: " + this.headPositionY);
+
 
     }
 

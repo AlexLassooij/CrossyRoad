@@ -1,13 +1,12 @@
-package model;
+package ui;
 
-
+import model.PlayerProfile;
 
 import java.util.*;
 
 public class Arcade {
     private List<PlayerProfile> playerProfileList;
     private Scanner scanner;
-    private boolean isTesting;
 
     /*
      * MODIFIES: this
@@ -15,12 +14,11 @@ public class Arcade {
      *          instantiates a new Scanner object
      *          calls displayOptions
      */
-    public Arcade(boolean testing) {
+    public Arcade() {
         this.playerProfileList = new ArrayList<>();
-        this.isTesting = testing;
         this.scanner = new Scanner(System.in);
         this.scanner.useDelimiter("\n");
-        displayOptions(isTesting);
+        displayOptions();
     }
 
 
@@ -28,13 +26,11 @@ public class Arcade {
      * EFFECTS: displays menu options
      *          calls handleInput to handle the user's choice
      */
-    private void displayOptions(boolean testing) {
+    private void displayOptions() {
         System.out.println("\nSelect from options below and press enter");
         System.out.println("\t1 -> create new profile");
         System.out.println("\t2 -> play CrossyRoad");
-        if (!testing) {
-            handleInput();
-        }
+        handleInput();
     }
 
     /*
@@ -59,7 +55,7 @@ public class Arcade {
             startCrossyRoad(chosenPlayer);
         } else {
             System.out.println("Invalid options");
-            displayOptions(isTesting);
+            displayOptions();
         }
     }
 
@@ -71,16 +67,11 @@ public class Arcade {
      */
     public void createNewProfile() {
         System.out.println("Creating new profile : \nWhat is your name ?");
-        String name;
-        if (!isTesting) {
-            name = scanner.next();
-        } else {
-            name = "testPlayer";
-        }
+        String name = scanner.next();
         PlayerProfile newProfile = new PlayerProfile(name);
         this.playerProfileList.add(newProfile);
         System.out.println("New profile added for " + name);
-        displayOptions(isTesting);
+        displayOptions();
     }
 
 

@@ -1,6 +1,8 @@
 package model;
 
 
+import ui.GameBoardGenerator;
+
 import java.util.*;
 
 public class CrossyRoadGame {
@@ -18,7 +20,6 @@ public class CrossyRoadGame {
     private PlayerProfile arcadePlayer;
     private List<CrossyRoadCar> cars;
     private GameBoardGenerator gameBoard;
-    private Scanner scanner;
 
     // START : game waiting to be initialized
     // ONGOING : player is playing
@@ -32,7 +33,6 @@ public class CrossyRoadGame {
      * EFFECTS: assigns player to member variable arcadePlayer
      *          asks whether to start at level one or highest achieved
      *          level and sets the current level accordingly
-     *          instantiates a new scanner object
      *          instantiates a new ArrayList for cars
      *          calls configureDifficulty and setUpCrossyRoad
      */
@@ -49,8 +49,6 @@ public class CrossyRoadGame {
         } else {
             this.currentLevel = this.arcadePlayer.getLevelAchieved();
         }
-        this.scanner = new Scanner(System.in);
-        this.scanner.useDelimiter("\n");
         this.cars = new ArrayList<>();
         configureDifficulty();
         setUpCrossyRoad();
@@ -80,7 +78,7 @@ public class CrossyRoadGame {
      *          calls displayCarPositions
      *          calls the gameBoard's printGameBoard method
      */
-    private void setUpCrossyRoad() {
+    public void setUpCrossyRoad() {
         this.gameStatus = "ONGOING";
         this.crossyRoadPlayer = new CrossyRoadPlayer(this.arcadePlayer.getPlayerName());
         cars.clear();
@@ -263,16 +261,11 @@ public class CrossyRoadGame {
             nextCar.moveCar();
             if (checkCollision(nextCar)) {
                 this.gameStatus = "FAILED";
-                System.out.println("Oh no ! You got hit !");
-                this.cars.clear();
-                System.out.println("Would you like to play again ?");
-                handleInput("restart");
                 break;
             }
             // if car is out of boundary, remove from game and create a new one
             if (isCarOutOfBoundary(nextCar)) {
                 int carIdentifier = nextCar.getCarIdentifier();
-                System.out.println("Car " + carIdentifier + "has left the game board");
                 int formerPositionY = nextCar.getCarPositionY();
                 CrossyRoadCar replacementCar = replaceCar(carIdentifier, formerPositionY);
                 this.cars.set(i, replacementCar);
@@ -342,75 +335,6 @@ public class CrossyRoadGame {
     }
 
     /*
-     * MODIFIES: this
-     * EFFECTS: displays a certain list of options depending on the type
-     *          of input that is being requested
-     *          if typeOfInput is "restart":
-     *              if user presses "r" will restart the game by calling
-     *              the setup method setUpCrossyRoad
-     *              if user presses "q", will quit the program
-     *          if typeOfInput is "move" :
-     *              calls movePlayer and passes the obtained input before
-     *              calling moveCars
-     *          else tells the user that they have provided invalid input
-     *          and lets them try again by calling itself
-     */
-    public void handleInput(String typeOfInput) {
-        displayOptions(typeOfInput);
-        String inputString = this.scanner.next();
-        inputString = inputString.toLowerCase(Locale.ROOT);
-        // to prevent player from accidentally restarting game while still playing
-        if (typeOfInput.equals("restart")) {
-            if (inputString.equals("r") && this.gameStatus.equals("FAILED")) {
-                System.out.println("Restarting game at level " + this.currentLevel + " !\n");
-                setUpCrossyRoad();
-            } else if (inputString.equals("q")) {
-                System.exit(0);
-            }
-        } else if (typeOfInput.equals("move")) {
-            this.crossyRoadPlayer.movePlayer(inputString);
-            moveCars();
-        } else {
-            System.out.println("Invalid input, please try again");
-            handleInput(typeOfInput);
-        }
-    }
-
-    /*
-     * MODIFIES: this
-     * EFFECTS: tells the user that they have completed the level
-     *          asks whether they would like to continue to the next level
-     *          if yes : increments the game's current level and the current player's
-     *          highest achieved level
-     *          calls configureDifficulty and setUpCrossyRoad to set up and set the difficulty
-     *          for the next level
-     *          if no : quits the program
-     */
-    private void handleGameCompletion() {
-        System.out.println("You have completed level " + this.currentLevel
-                + " !\n"
-                + "Would you like to continue to the next level (n/y) ?\n");
-        String choice = this.scanner.next();
-        choice = choice.toLowerCase(Locale.ROOT);
-        if (choice.equals("y")) {
-            increaseLevel();
-            this.arcadePlayer.increaseLevelAchieved();
-            configureDifficulty();
-            setUpCrossyRoad();
-
-        } else if (choice.equals("n")) {
-            this.gameStatus = "QUIT";
-            System.exit(0);
-        } else {
-            System.out.println("Invalid key Press");
-
-        }
-
-
-    }
-
-
-    /*
      * EFFECTS: returns true if player's Y coordinate is equal to or larger
      *          than the gameBoard's height
      *          returns false otherwise
@@ -434,48 +358,6 @@ public class CrossyRoadGame {
 //        }
 //    }
 
-    /*
-     * MODIFIES: this
-     * EFFECTS: calls handleInput to request the input for the next player move
-     *          checks if the player has completed the game. if so, sets the gameStatus
-     *          to "COMPLETED" and calls handleGameCompletion
-     *          updates the gameBoard since the player and the cars will have moved
-     */
-    public void update() {
-        handleInput("move");
-        if (checkCompletion()) {
-            this.gameStatus = "COMPLETED";
-            handleGameCompletion();
-        }
-        this.gameBoard.printGameBoard(this.cars, this.crossyRoadPlayer, this.gameStatus);
-
-
-    }
-
-
-    /*
-     * EFFECTS: if typeOfInput is "restart" :
-     *              prints out the options for restarting or quitting
-     *          if typePfInput is "move" :
-     *              prints out the options for moving either
-     *              up, down, left or right
-     */
-    private void displayOptions(String typeOfInput) {
-        System.out.println("\nSelect from options below and press enter");
-        if (typeOfInput.equals("restart")) {
-            System.out.println("\tr -> restart");
-            System.out.println("\tq -> quit");
-        } else if (typeOfInput.equals("move")) {
-//            System.out.println("\t⬆ -> up");
-//            System.out.println("\t⬅ -> left");
-//            System.out.println("\t⬇ -> down");
-//            System.out.println("\t➡ -> right");
-            System.out.println("\tw -> up");
-            System.out.println("\ta -> left");
-            System.out.println("\ts -> down");
-            System.out.println("\td -> right");
-        }
-    }
 
     // helper functions for testing
     // may be of use later on
@@ -517,6 +399,18 @@ public class CrossyRoadGame {
 
     public void setNumCars(int numCars) {
         this.numCars = numCars;
+    }
+
+    public void setGameStatus(String gameStatus) {
+        this.gameStatus = gameStatus;
+    }
+
+    public GameBoardGenerator getGameBoard() {
+        return this.gameBoard;
+    }
+
+    public CrossyRoadPlayer getCrossyRoadPlayer() {
+        return this.crossyRoadPlayer;
     }
 
 }

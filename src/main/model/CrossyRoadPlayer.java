@@ -23,7 +23,6 @@ public class CrossyRoadPlayer {
         } else {
             this.positionX = checkBoundariesAndMove(directionOfMovement, this.positionX);
         }
-        System.out.println("Your position: X: " + this.positionX + " Y: " + this.positionY);
     }
 
 //    public void movePlayer(int keyCode) {
@@ -57,34 +56,33 @@ public class CrossyRoadPlayer {
                     return position + 1;
                 }
             default:
-                System.out.println("Invalid key Press");
                 return position;
         }
     }
 
     // requires the main game to check for a game win
-    private int checkBoundariesAndMove(int keyCode, int position) {
-        switch (keyCode) {
-            case KeyEvent.VK_UP:
-                return position + 1;
-            case KeyEvent.VK_DOWN:
-            case KeyEvent.VK_LEFT:
-                if (position == 0) {
-                    return position;
-                } else {
-                    return position - 1;
-                }
-            case KeyEvent.VK_RIGHT:
-                if (position == CrossyRoadGame.GAME_WIDTH - 1) {
-                    return position;
-                } else {
-                    return position + 1;
-                }
-            default:
-                System.out.println("Invalid key Press");
-                return position;
-        }
-    }
+//    private int checkBoundariesAndMove(int keyCode, int position) {
+//        switch (keyCode) {
+//            case KeyEvent.VK_UP:
+//                return position + 1;
+//            case KeyEvent.VK_DOWN:
+//            case KeyEvent.VK_LEFT:
+//                if (position == 0) {
+//                    return position;
+//                } else {
+//                    return position - 1;
+//                }
+//            case KeyEvent.VK_RIGHT:
+//                if (position == CrossyRoadGame.GAME_WIDTH - 1) {
+//                    return position;
+//                } else {
+//                    return position + 1;
+//                }
+//            default:
+//                System.out.println("Invalid key Press");
+//                return position;
+//        }
+//    }
 
     public int getPositionX() {
         return this.positionX;

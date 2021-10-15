@@ -1,8 +1,10 @@
-package model;
+package ui;
+
+import model.CrossyRoadCar;
+import model.CrossyRoadPlayer;
 
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Random;
 
 public class GameBoardGenerator {
     private int height;
