@@ -67,10 +67,9 @@ public class GameBoardGenerator {
         for (CrossyRoadCar nextCar : cars) {
             setCars(nextCar);
         }
-        if (!gameStatus.equals("COMPLETED")) {
+        if (!(gameStatus.equals("COMPLETED") || gameStatus.equals("QUIT"))) {
             setPlayer(player);
         }
-
     }
 
     /*

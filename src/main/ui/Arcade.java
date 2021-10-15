@@ -74,7 +74,6 @@ public class Arcade {
         displayOptions();
     }
 
-
     /*
      * EFFECTS: instantiates a new CrossyRoadRun object
      */

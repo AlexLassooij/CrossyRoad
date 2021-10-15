@@ -1,11 +1,27 @@
 # My Personal Project
 
-## A subtitle
+## Project Description
 
-A *bulleted* list:
-- item 1
-- item 2
-- item 3
+### What will the application do?
+The application will let a user enter a virtual Arcade. Initially they will be able to create or choose an existing
+profile and enter a game "signed in" under that profile. Once the user enters the game, they will be able to control
+their player's position in order to complete the game. Upon completion, they may proceed to the next level or quit 
+the game. Later on, (not yet implemented) players will be able to gain points through completing the game. 
 
-An example of text with **bold** and *italic* fonts.  Note that the IntelliJ markdown previewer doesn't seem to render 
-the bold and italic fonts correctly but they will appear correctly on GitHub.
+### Who will use it?
+Anyone who is looking to have a bit of fun or relax by playing a simple yet engaging game. It is easy to use and 
+the user interface is intuitive, so people of all ages and backgrounds will be able to use it.
+
+### Why is this project of interest to you?
+Personally, I find that life nowadays gets extremely stressful and people often forget to take some time out of 
+their days to have some fun. Therefore, it would be nice to build an application that gives people quick access to a 
+variety of games (the long term idea is to build multiple mini-games for this arcade) at their fingertips. 
+Additionally, I  enjoyed playing the real Crossy Road game when I was younger, so it is engaging experience to
+create a similar game. I believe building such a game is a bit more complex than is required, so it is also a good 
+experience for me to get more familiar with Object-Oriented Programming. 
+
+###User Stories:
+- As a user, I want to be able to create and add a new profile to the list of players in the Arcade
+- As a user, I want to be to choose what player profile I want to play a game with
+- As a user, I want to be able to navigate around the game board within the crossy road game
+- As a user, I want to be able to choose between proceeding to the next level or quitting the game
