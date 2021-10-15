@@ -3,6 +3,7 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ui.GameBoardGenerator;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -155,13 +156,29 @@ public class CrossyRoadGameTest {
         replacementCar = testGame.replaceCar(carIdentifier, positionY);
         assertEquals(carIdentifier, replacementCar.getCarIdentifier());
         assertEquals(positionY, replacementCar.getCarPositionY());
-
-
     }
 
     @Test
     void testCheckCompletion() {
         assertFalse(testGame.checkCompletion());
+    }
+
+    @Test
+    void testSetGameStatus() {
+        testGame.setGameStatus("TEST");
+        assertEquals("TEST", testGame.getGameStatus());
+    }
+
+    @Test
+    void testGetGameBoard() {
+        GameBoardGenerator gameBoard = testGame.getGameBoard();
+        assertEquals(testGame.getGameBoard(), gameBoard);
+    }
+
+    @Test
+    void testGetCrossyRoadPlayer() {
+        CrossyRoadPlayer player = testGame.getCrossyRoadPlayer();
+        assertEquals(testGame.getCrossyRoadPlayer(), player);
     }
 
 }
