@@ -6,6 +6,8 @@ import javax.swing.Timer;
 public class CrossyRoadRun {
     private CrossyRoadGame crossyRoadGame;
     public static final  int CONSOLE_INTERVAL = 1000;
+    private Timer updateTimer;
+    private boolean isTimerRunning;
 
     /*
      * REQUIRES: player is a valid PlayerProfile object
@@ -18,6 +20,7 @@ public class CrossyRoadRun {
     public CrossyRoadRun(PlayerProfile player) {
         System.out.println(player.getPlayerName() + " is playing !\n");
         this.crossyRoadGame = new CrossyRoadGame(player);
+        this.isTimerRunning = false;
         addTimer();
     }
 
@@ -28,8 +31,18 @@ public class CrossyRoadRun {
     //           INTERVAL milliseconds
     private void addTimer() {
 
-        Timer updateTimer = new Timer(CONSOLE_INTERVAL, ae -> crossyRoadGame.update());
-        updateTimer.start();
+        this.updateTimer = new Timer(CONSOLE_INTERVAL, ae -> crossyRoadGame.update());
+        this.updateTimer.start();
+        this.isTimerRunning = true;
+    }
+
+    public void stopTimer() {
+        this.updateTimer.stop();
+        this.isTimerRunning = false;
+    }
+
+    public boolean getTimerStatus() {
+        return this.isTimerRunning;
     }
 
 //    private class KeyHandler extends KeyAdapter {

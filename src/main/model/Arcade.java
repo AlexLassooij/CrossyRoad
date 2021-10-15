@@ -7,6 +7,7 @@ import java.util.*;
 public class Arcade {
     private List<PlayerProfile> playerProfileList;
     private Scanner scanner;
+    private boolean isTesting;
 
     /*
      * MODIFIES: this
@@ -16,11 +17,10 @@ public class Arcade {
      */
     public Arcade(boolean testing) {
         this.playerProfileList = new ArrayList<>();
+        this.isTesting = testing;
         this.scanner = new Scanner(System.in);
         this.scanner.useDelimiter("\n");
-        if (!testing) {
-            displayOptions();
-        }
+        displayOptions(isTesting);
     }
 
 
@@ -28,11 +28,13 @@ public class Arcade {
      * EFFECTS: displays menu options
      *          calls handleInput to handle the user's choice
      */
-    private void displayOptions() {
+    private void displayOptions(boolean testing) {
         System.out.println("\nSelect from options below and press enter");
         System.out.println("\t1 -> create new profile");
         System.out.println("\t2 -> play CrossyRoad");
-        handleInput();
+        if (!testing) {
+            handleInput();
+        }
     }
 
     /*
@@ -57,7 +59,7 @@ public class Arcade {
             startCrossyRoad(chosenPlayer);
         } else {
             System.out.println("Invalid options");
-            displayOptions();
+            displayOptions(isTesting);
         }
     }
 
@@ -69,20 +71,18 @@ public class Arcade {
      */
     public void createNewProfile() {
         System.out.println("Creating new profile : \nWhat is your name ?");
-        String name = scanner.next();
+        String name;
+        if (!isTesting) {
+            name = scanner.next();
+        } else {
+            name = "testPlayer";
+        }
         PlayerProfile newProfile = new PlayerProfile(name);
         this.playerProfileList.add(newProfile);
         System.out.println("New profile added for " + name);
-        displayOptions();
+        displayOptions(isTesting);
     }
 
-    // overloaded method for the sole purpose of testing, since
-    // tests cannot take in user input
-    public void createNewProfile(String name) {
-        PlayerProfile newProfile = new PlayerProfile(name);
-        this.playerProfileList.add(newProfile);
-        System.out.println("New profile added for " + name);
-    }
 
     /*
      * EFFECTS: instantiates a new CrossyRoadRun object
@@ -95,8 +95,5 @@ public class Arcade {
         return this.playerProfileList;
     }
 
-    public Scanner getScanner() {
-        return this.scanner;
-    }
 }
 

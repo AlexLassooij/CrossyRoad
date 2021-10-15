@@ -161,7 +161,7 @@ public class CrossyRoadGame {
      *
      *          returns a new CrossyRoadCar object
      */
-    private CrossyRoadCar replaceCar(int carIdentifier, int formerPositionY) {
+    public CrossyRoadCar replaceCar(int carIdentifier, int formerPositionY) {
         List<Integer> coordinateListY = generateCoordinateListY();
         List<Integer> carLengthList = generateCarLengthList();
         Hashtable<String, Integer> infoTable = generateCarInfo(coordinateListY, carLengthList);
@@ -415,7 +415,7 @@ public class CrossyRoadGame {
      *          than the gameBoard's height
      *          returns false otherwise
      */
-    private boolean checkCompletion() {
+    public boolean checkCompletion() {
         return this.crossyRoadPlayer.getPositionY() >= this.gameHeight;
     }
 
@@ -515,5 +515,8 @@ public class CrossyRoadGame {
         this.currentLevel += 1;
     }
 
+    public void setNumCars(int numCars) {
+        this.numCars = numCars;
+    }
 
 }

@@ -17,7 +17,6 @@ public class CrossyRoadCarTest {
     void setUpTest() {
         testCar = new CrossyRoadCar(0, 0, 1 ,1 , 1, "right");
         testCar2 = new CrossyRoadCar(4, 0, 1 ,1 , 2, "left");
-
     }
 
     @Test

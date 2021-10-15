@@ -24,6 +24,10 @@ public class PlayerProfile {
         this.pointsAchieved += points;
     }
 
+    public int getPoints() {
+        return this.pointsAchieved;
+    }
+
     public int getLevelAchieved() {
         return this.levelAchieved;
     }

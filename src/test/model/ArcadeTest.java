@@ -20,7 +20,7 @@ class ArcadeTest {
 
     @Test
     void testCreateNewProfile() {
-        testArcade.createNewProfile("testPlayer");
+        testArcade.createNewProfile();
         assertEquals(1, testArcade.getPlayerProfileList().size());
         assertEquals("testPlayer", testArcade.getPlayerProfileList().get(0).getPlayerName());
     }

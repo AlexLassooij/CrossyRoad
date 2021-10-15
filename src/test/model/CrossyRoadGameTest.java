@@ -141,7 +141,27 @@ public class CrossyRoadGameTest {
             assertFalse(occupiedYList.contains(positionY));
             occupiedYList.add(positionY);
         }
+    }
 
+    @Test
+    void testReplaceCar() {
+        CrossyRoadCar testCar = testGame.getCars().get(0);
+        int carIdentifier = testCar.getCarIdentifier();
+        int positionY = testCar.getCarPositionY();
+        CrossyRoadCar replacementCar = testGame.replaceCar(carIdentifier, positionY);
+        assertEquals(carIdentifier, replacementCar.getCarIdentifier());
+
+        testGame.setNumCars(testGame.getGameHeight());
+        replacementCar = testGame.replaceCar(carIdentifier, positionY);
+        assertEquals(carIdentifier, replacementCar.getCarIdentifier());
+        assertEquals(positionY, replacementCar.getCarPositionY());
+
+
+    }
+
+    @Test
+    void testCheckCompletion() {
+        assertFalse(testGame.checkCompletion());
     }
 
 }
