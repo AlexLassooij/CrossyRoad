@@ -1,6 +1,8 @@
 package model;
 
 
+import org.json.JSONObject;
+
 public class PlayerProfile {
     private String playerName;
     private int pointsAchieved;
@@ -10,6 +12,12 @@ public class PlayerProfile {
         this.playerName = playerName;
         this.pointsAchieved = 0;
         this.levelAchieved = 1;
+    }
+
+    public PlayerProfile(String playerName, int pointsAchieved, int levelAchieved) {
+        this.playerName = playerName;
+        this.pointsAchieved = pointsAchieved;
+        this.levelAchieved = levelAchieved;
     }
 
     public String getPlayerName() {
@@ -34,6 +42,14 @@ public class PlayerProfile {
 
     public void increaseLevelAchieved() {
         this.levelAchieved += 1;
+    }
+
+    public JSONObject profileToJsonObject() {
+        JSONObject json = new JSONObject();
+        json.put("playerName", this.playerName);
+        json.put("pointsAchieved", this.pointsAchieved);
+        json.put("levelAchieved", this.levelAchieved);
+        return json;
     }
 }
 

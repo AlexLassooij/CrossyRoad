@@ -92,6 +92,10 @@ public class CrossyRoadCar {
         return this.headPositionX;
     }
 
+    public void setHeadPositionY(int positionY) {
+        this.headPositionY = positionY;
+    }
+
     /*
      * REQUIRES: headPositionX, headPositionY and carLength are all of
      *           type Integer

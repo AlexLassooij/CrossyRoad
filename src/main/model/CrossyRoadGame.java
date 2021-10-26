@@ -77,7 +77,7 @@ public class CrossyRoadGame {
     public void setUpCrossyRoad() {
         this.gameStatus = "ONGOING";
         this.crossyRoadPlayer = new CrossyRoadPlayer(this.arcadePlayer.getPlayerName());
-        cars.clear();
+        clearCars();
         generateCars(this.numCars);
         this.gameBoard = new GameBoardGenerator(this.gameHeight, GAME_WIDTH);
         displayCarPositions();
@@ -116,19 +116,7 @@ public class CrossyRoadGame {
         List<Integer> coordinateListY = generateCoordinateListY();
         List<Integer> carLengthList = generateCarLengthList();
         for (int i = 0;i < numCars;i++) {
-            Hashtable<String, Integer> infoTable = generateCarInfo(coordinateListY, carLengthList);
-            int positionX = infoTable.get("positionX");
-            int positionY = infoTable.get("positionY");
-            int carLength = infoTable.get("carLength");
-            int velocity = infoTable.get("velocity");
-            String movementDirection;
-            if (positionX == 0) {
-                movementDirection = "right";
-            } else {
-                movementDirection = "left";
-            }
-            CrossyRoadCar car = new CrossyRoadCar(positionX, positionY, velocity, carLength, cars.size() + 1,
-                    movementDirection);
+            CrossyRoadCar car = createCar(coordinateListY, carLengthList, cars.size() + 1);
             this.cars.add(car);
             if (coordinateListY.size() == 0) {
                 coordinateListY = generateCoordinateListY();
@@ -143,11 +131,7 @@ public class CrossyRoadGame {
      *          all non-occupied Y coordinates
      *          creates a new car length list that will hold
      *          all allowed car lengths
-     *          generates a new Hashtable with randomized car data that is
-     *          assigned to positionX, car length and velocity
-     *          sets the movementDirection to "right" if car is starting
-     *          on left side or to "left" if car is starting on right side
-     *
+     *          generates a new car with this information
      *          if the number of cars exceeds the game's height (impossible with
      *          current configuration but subject to change), positionY will
      *          be the same as the car it is replacing, or else positionY will
@@ -158,16 +142,20 @@ public class CrossyRoadGame {
     public CrossyRoadCar replaceCar(int carIdentifier, int formerPositionY) {
         List<Integer> coordinateListY = generateCoordinateListY();
         List<Integer> carLengthList = generateCarLengthList();
-        Hashtable<String, Integer> infoTable = generateCarInfo(coordinateListY, carLengthList);
-        int positionX = infoTable.get("positionX");
-        int positionY;
+        CrossyRoadCar car = createCar(coordinateListY, carLengthList, carIdentifier);
         // if there are many cars, we would like to generate a new car in the same
         // row to avoid clustering on same row
         if (numCars >= this.gameHeight) {
-            positionY = formerPositionY;
-        } else {
-            positionY = infoTable.get("positionY");
+            car.setHeadPositionY(formerPositionY);
         }
+        return car;
+    }
+
+
+    private CrossyRoadCar createCar(List<Integer> coordinateListY, List<Integer> carLengthList, int carIdentifier) {
+        Hashtable<String, Integer> infoTable = generateCarInfo(coordinateListY, carLengthList);
+        int positionX = infoTable.get("positionX");
+        int positionY = infoTable.get("positionY");
         int carLength = infoTable.get("carLength");
         int velocity = infoTable.get("velocity");
         String movementDirection;
@@ -176,7 +164,7 @@ public class CrossyRoadGame {
         } else {
             movementDirection = "left";
         }
-        return new CrossyRoadCar(positionX, positionY, velocity, carLength, carIdentifier,
+        return new CrossyRoadCar(positionX, positionY, velocity, carLength, cars.size() + 1,
                 movementDirection);
     }
 

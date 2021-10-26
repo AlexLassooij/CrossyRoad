@@ -24,7 +24,7 @@ public class CrossyRoadRun {
      *          instantiates a new CrossyRoadGame object
      *          calls addTimer
      */
-    public CrossyRoadRun(PlayerProfile player) {
+    public CrossyRoadRun(PlayerProfile player) throws QuitGameException {
         System.out.println(player.getPlayerName() + " is playing !\n");
         this.scanner = new Scanner(System.in);
         this.scanner.useDelimiter("\n");
@@ -36,8 +36,7 @@ public class CrossyRoadRun {
         }
         boolean restartLevel = choice.equals("1");
         this.crossyRoadGame = new CrossyRoadGame(player, restartLevel);
-        this.isTimerRunning = false;
-        addTimer();
+        update();
     }
 
     // This method was taken from the SpaceInvadersBase in-lecture lab code base
@@ -45,27 +44,27 @@ public class CrossyRoadRun {
     // modifies: none
     // effects:  initializes a timer that updates game each
     //           INTERVAL milliseconds
-    private void addTimer() {
-        this.updateTimer = new Timer(CONSOLE_INTERVAL, ae -> {
-            try {
-                update();
-            } catch (QuitGameException e) {
-                System.out.println("Quitting the game...");
-                stopTimer();
-            }
-        });
-        this.updateTimer.start();
-        this.isTimerRunning = true;
-    }
-
-    public void stopTimer() {
-        this.updateTimer.stop();
-        this.isTimerRunning = false;
-    }
-
-    public boolean getTimerStatus() {
-        return this.isTimerRunning;
-    }
+//    private void addTimer() {
+//        this.updateTimer = new Timer(CONSOLE_INTERVAL, ae -> {
+//            try {
+//                update();
+//            } catch (QuitGameException e) {
+//                System.out.println("Quitting the game...");
+//                stopTimer();
+//            }
+//        });
+//        this.updateTimer.start();
+//        this.isTimerRunning = true;
+//    }
+//
+//    public void stopTimer() {
+//        this.updateTimer.stop();
+//        this.isTimerRunning = false;
+//    }
+//
+//    public boolean getTimerStatus() {
+//        return this.isTimerRunning;
+//    }
 
     /*
      * MODIFIES: this
@@ -75,15 +74,23 @@ public class CrossyRoadRun {
      *          updates the gameBoard since the player and the cars will have moved
      */
     private void update() throws QuitGameException {
-        handleInput("move");
-        if (this.crossyRoadGame.checkCompletion()) {
-            this.crossyRoadGame.setGameStatus("COMPLETED");
-            handleGameCompletion();
+        while (this.crossyRoadGame.getGameStatus().equals("ONGOING")) {
+            handleInput("move");
+            if (this.crossyRoadGame.getGameStatus().equals("FAILED")) {
+                handleGameFail();
+            } else if (this.crossyRoadGame.getGameStatus().equals("COMPLETED")) {
+                handleGameCompletion();
+            } else {
+                this.crossyRoadGame.getGameBoard().printGameBoard(
+                        this.crossyRoadGame.getCars(),
+                        this.crossyRoadGame.getCrossyRoadPlayer(),
+                        this.crossyRoadGame.getGameStatus());
+                update();
+            }
+
+
         }
-        this.crossyRoadGame.getGameBoard().printGameBoard(
-                this.crossyRoadGame.getCars(),
-                this.crossyRoadGame.getCrossyRoadPlayer(),
-                this.crossyRoadGame.getGameStatus());
+
     }
 
     /*
@@ -119,21 +126,18 @@ public class CrossyRoadRun {
         if (inputString.equals("r") && this.crossyRoadGame.getGameStatus().equals("FAILED")) {
             System.out.println("Restarting game at level " + this.crossyRoadGame.getCurrentLevel() + " !\n");
             this.crossyRoadGame.setUpCrossyRoad();
+            update();
         } else if (inputString.equals("q")) {
-            stopTimer();
             this.crossyRoadGame.setGameStatus("QUIT");
             throw new QuitGameException();
         }
     }
 
-    private void handleMoveInput(String inputString) throws QuitGameException {
+    private void handleMoveInput(String inputString) {
         this.crossyRoadGame.getCrossyRoadPlayer().movePlayer(inputString);
         this.crossyRoadGame.moveCars();
-        if (crossyRoadGame.getGameStatus().equals("FAILED")) {
-            System.out.println("Oh no ! You got hit !");
-            this.crossyRoadGame.clearCars();
-            System.out.println("Would you like to play again ?");
-            handleInput("restart");
+        if (this.crossyRoadGame.checkCompletion()) {
+            this.crossyRoadGame.setGameStatus("COMPLETED");
         }
     }
 
@@ -162,17 +166,6 @@ public class CrossyRoadRun {
     }
 
     /*
-     * EFFECTS: iteratively prints out each car's X and coordinates along
-     *          with the car's identifier
-     */
-    private void displayCarPositions() {
-        for (CrossyRoadCar nextCar: this.crossyRoadGame.getCars()) {
-            System.out.println("Car " + nextCar.getCarIdentifier() + "'s head is at X: "
-                    + nextCar.getCarPositionX() + " Y: " + nextCar.getCarPositionY());
-        }
-    }
-
-    /*
      * MODIFIES: this
      * EFFECTS: tells the user that they have completed the level
      *          asks whether they would like to continue to the next level
@@ -188,21 +181,27 @@ public class CrossyRoadRun {
                 + "Would you like to continue to the next level (y/n) ?\n");
         String choice = this.scanner.next();
         choice = choice.toLowerCase(Locale.ROOT);
+        this.crossyRoadGame.getArcadePlayer().increaseLevelAchieved();
         if (choice.equals("y")) {
             this.crossyRoadGame.increaseLevel();
-            this.crossyRoadGame.getArcadePlayer().increaseLevelAchieved();
             this.crossyRoadGame.configureDifficulty();
             this.crossyRoadGame.setUpCrossyRoad();
 
         } else if (choice.equals("n")) {
             this.crossyRoadGame.setGameStatus("QUIT");
             this.crossyRoadGame.clearCars();
-            stopTimer();
             throw new QuitGameException();
         } else {
             System.out.println("Invalid key Press");
 
         }
+    }
+
+    private void handleGameFail() throws QuitGameException {
+        System.out.println("Oh no ! You got hit !");
+        this.crossyRoadGame.clearCars();
+        System.out.println("Would you like to play again ?");
+        handleInput("restart");
     }
 
 //    private class KeyHandler extends KeyAdapter {
