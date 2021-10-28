@@ -10,8 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
-
-// Represents a reader that reads workroom from JSON data stored in file
+// Note : a large portion of my JSON IO code has been taken from the JSONSerialization sample project
+// Represents a reader that reads arcade from JSON data stored in file
 public class JsonReader {
     private String source;
     private Arcade arcade;
@@ -41,7 +41,10 @@ public class JsonReader {
         return contentBuilder.toString();
     }
 
-    // EFFECTS: parses workroom from JSON object and returns it
+    // the arcade is stored in a 2D JSON array
+    // first reads the elements of the first dimension, that being
+    // each game itself
+    // EFFECTS: parses arcade from JSON object and returns it
     private void parseArcade(JSONArray arcadeArray) {
         for (int i = 0; i < arcadeArray.length(); i++) {
             JSONObject game = arcadeArray.getJSONObject(i);
@@ -51,7 +54,9 @@ public class JsonReader {
         }
     }
 
-    // EFFECTS: parses workroom from JSON object and returns it
+    // reads the second dimension of the array, that being the information
+    // of each player that belongs to the game
+    // EFFECTS: parses arcade from JSON object and returns it
     private void parseProfiles(JSONArray profiles, String gameName) {
         for (int i = 0; i < profiles.length(); i++) {
             JSONObject profile = profiles.getJSONObject(i);

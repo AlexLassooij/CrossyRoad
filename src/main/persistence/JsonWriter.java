@@ -5,6 +5,7 @@ import org.json.JSONArray;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
+// Note : a large portion of my JSON IO code has been taken from the JSONSerialization sample project
 // Represents a writer that writes JSON representation of workroom to file
 public class JsonWriter {
     private static final int TAB = 4;
