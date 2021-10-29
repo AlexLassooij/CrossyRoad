@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 // Note : a large portion of my JSON IO code has been taken from the JSONSerialization sample project
 // Represents a reader that reads arcade from JSON data stored in file
+
 public class JsonReader {
     private String source;
     private Arcade arcade;
