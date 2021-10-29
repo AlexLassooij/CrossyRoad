@@ -87,7 +87,12 @@ public class Arcade {
                 }
         }
 
+
         return jsonProfileArray;
+    }
+
+    public void setjsonWriter(JsonWriter writer) {
+        this.jsonWriter = writer;
     }
 
 }

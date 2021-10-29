@@ -164,7 +164,7 @@ public class CrossyRoadGame {
         } else {
             movementDirection = "left";
         }
-        return new CrossyRoadCar(positionX, positionY, velocity, carLength, cars.size() + 1,
+        return new CrossyRoadCar(positionX, positionY, velocity, carLength, carIdentifier,
                 movementDirection);
     }
 
