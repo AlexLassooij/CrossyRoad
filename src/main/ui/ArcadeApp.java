@@ -1,25 +1,32 @@
 package ui;
 
 import exceptions.QuitGameException;
-import model.GameName;
-import model.PlayerProfile;
-import model.Arcade;
-import org.json.JSONArray;
-import org.json.JSONObject;
-//import persistence.JsonReader;
+import model.*;
 import persistence.JsonReader;
-import persistence.JsonWriter;
 
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
 
-public class ArcadeApp {
+public class ArcadeApp extends JFrame implements ActionListener {
     private static final String JSON_STORE = "./data/arcade.json";
-    private Scanner scanner;
-    private JsonReader jsonReader;
+    public static final int BUTTON_WIDTH = 400;
+    public static final int BUTTON_POS_X = (CrossyRoadGame.GAME_WIDTH - BUTTON_WIDTH) / 2;
+    public static final int COMPONENT_HEIGHT = 100;
+    public static final int TEXT_AREA_PADDING = 100;
+    private final JsonReader jsonReader;
     private Arcade arcade;
+    private CrossyRoadEventHandler eventHandler;
+    private String newPlayerName = null;
+    private String newGameMode = null;
+    private final Font arcadeFont = new Font("Arial",Font.BOLD, 20);
     //private JsonReader jsonReader;
 
     /*
@@ -29,83 +36,62 @@ public class ArcadeApp {
      *          calls displayOptions
      */
     public ArcadeApp() {
-        this.scanner = new Scanner(System.in);
-        this.scanner.useDelimiter("\n");
+        super("Crossy Road");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setUndecorated(false);
+        setBackground(Color.white);
+        setSize(CrossyRoadGame.GAME_WIDTH, GameBoard.INIT_HEIGHT);
+        centreOnScreen();
+        initMenu();
+        //add(this.initMenu, BorderLayout.CENTER);
+        setVisible(true);
+        //displayOptions();
         jsonReader = new JsonReader(JSON_STORE);
         loadArcade();
-        displayOptions();
     }
 
     /*
      * EFFECTS: displays menu options
      *          calls handleInput to handle the user's choice
      */
-    private void displayOptions() {
-        System.out.println("\nSelect from options below and press enter");
-        System.out.println("\t(1) Create new profile");
-        System.out.println("\t(2) Play a game");
-        System.out.println("\t(3) Exit arcade");
-
-        handleInput();
-    }
-
-    /*
-     * EFFECTS: calls createNewProfile is choice is "1"
-     *          Asks for further input to determine which player is playing
-     *          if choice is "2"
-     *          Once player is chosen, startCrossyRoad is called
-     */
-    private void handleInput() {
-        String choice = scanner.next();
-        switch (choice) {
-            case "1":
-                createNewProfile();
-                break;
-            case "2":
-                playGame();
-                break;
-            case "3":
-                saveArcade();
-                break;
-            default:
-                System.out.println("Invalid options");
-                displayOptions();
-                break;
-        }
+    private void initMenu() {
+        getContentPane().removeAll();
+        addCentredTextArea("Welcome to the Arcade ! ", COMPONENT_HEIGHT, arcadeFont,
+                getFontMetrics(arcadeFont));
+        addCentredTextArea("Select from the options below ↓", COMPONENT_HEIGHT * 2, arcadeFont,
+                getFontMetrics(arcadeFont));
+        addCentredButton(BUTTON_POS_X, COMPONENT_HEIGHT * 3, "Create new profile", "newProfile");
+        addCentredButton(BUTTON_POS_X, COMPONENT_HEIGHT * 4, "Play a game", "playGame");
+        addCentredButton(BUTTON_POS_X, COMPONENT_HEIGHT * 5, "Exit arcade", "exit");
+        add(new JTextField(""));
+        repaint();
     }
 
     private void playGame() {
-        System.out.println("What would you like to play");
-        int i = 1;
-        for (GameName name : GameName.values()) {
-            System.out.println("(" + i + ")" + " " + name);
-        }
-        String choice = scanner.next();
+        getContentPane().removeAll();
+        getContentPane().setBackground(Color.white);
+        addCentredTextArea("What would you like to play",
+                COMPONENT_HEIGHT, arcadeFont, getFontMetrics(arcadeFont));
 
-        switch (choice) {
-            case "1":
-                playCrossyRoad();
-                break;
-            case "2":
-                System.out.println("Playing memory...");
-                break;
-            default:
-                System.out.println("I eat ass");
+        for (int i = 0; i < GameName.values().length; i++) {
+            addCentredButton(BUTTON_POS_X,
+                    (3 + i) * COMPONENT_HEIGHT, GameName.values()[i].toString(),
+                    "gameChoice");
         }
+        add(new JTextField(""));
+        repaint();
     }
 
     private void playCrossyRoad() {
-        System.out.println("Who is playing ?");
-        int label = 1;
+        getContentPane().removeAll();
+        addCentredTextArea("Who is playing",
+                COMPONENT_HEIGHT, arcadeFont, getFontMetrics(arcadeFont));
         List<PlayerProfile> playerList = this.arcade.getPlayerProfileList("CROSSYROAD");
-        for (PlayerProfile player : playerList) {
-            System.out.println("(" + label + ")\t" + player.getPlayerName());
-            label++;
+        for (int i = 0; i < playerList.size(); i++) {
+            addCentredButton(BUTTON_POS_X, (2 + i) * COMPONENT_HEIGHT, playerList.get(i).getPlayerName(),
+                    "crossyRoadSelection");
         }
-        String playerChoice = scanner.next();
-        int index = Integer.parseInt(playerChoice) - 1;
-        PlayerProfile chosenPlayer = playerList.get(index);
-        startCrossyRoad(chosenPlayer);
+        repaint();
     }
 
     /*
@@ -115,36 +101,48 @@ public class ArcadeApp {
      *          the new object is added to the PlayerProfile list
      */
     public void createNewProfile() {
-        System.out.println("Creating new profile : \nWhat is your name ?");
-        String name = scanner.next();
-        PlayerProfile newProfile = new PlayerProfile(name);
-        System.out.println("What game will this player be playing ?");
-        String choice = getGameName().toString();
-        this.arcade.addPlayerProfile(newProfile, choice);
-        System.out.println("New profile added for " + name + "under" + choice);
-        displayOptions();
+        getContentPane().removeAll();
+        addCentredTextField("What is your name ?",
+                COMPONENT_HEIGHT, arcadeFont, getFontMetrics(arcadeFont), "newPlayerName");
+        addCentredTextArea("What game will this player be playing ?",
+                COMPONENT_HEIGHT * 2, arcadeFont, getFontMetrics(arcadeFont));
+        for (int i = 0; i < GameName.values().length; i++) {
+            addCentredButton((CrossyRoadGame.GAME_WIDTH - BUTTON_WIDTH) / 2,
+                    (3 + i) * COMPONENT_HEIGHT, GameName.values()[i].toString(),
+                    "gameModeSelect");
+        }
+        repaint();
     }
 
-    // EFFECTS: prompts user to select category and returns it
-    private GameName getGameName() {
-        int label = 1;
-        for (GameName name : GameName.values()) {
-            System.out.println("(" + label + ")" + ": " + name);
-            label++;
-        }
-        return GameName.values()[scanner.nextInt() - 1];
+    private void addProfile() {
+        getContentPane().removeAll();
+        this.arcade.addPlayerProfile(new PlayerProfile(newPlayerName), newGameMode);
+        addCentredTextArea("New profile added for " + newPlayerName + "under" + newGameMode,
+                COMPONENT_HEIGHT, arcadeFont, getFontMetrics(arcadeFont));
+        this.newPlayerName = null;
+        this.newGameMode = null;
+        repaint();
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+        initMenu();
+
     }
 
     /*
      * EFFECTS: instantiates a new CrossyRoadRun object
      */
     private void startCrossyRoad(PlayerProfile player) {
-        try {
-            new CrossyRoadRun(player);
-        } catch (QuitGameException e) {
-            saveArcade();
-            displayOptions();
-        }
+        getContentPane().removeAll();
+        CrossyRoadRun runner = new CrossyRoadRun(player);
+        add(runner);
+        pack();
+        repaint();
+        this.eventHandler = new CrossyRoadEventHandler(runner.getCrossyRoadGame());
+        addKeyListener(new KeyHandler());
+        // instead, add arcadeTimer that will display arcade menu if gameStatus is quit
     }
 
     // Taken from JSONSerialization
@@ -158,6 +156,7 @@ public class ArcadeApp {
         }
 
         System.out.println("Quitting Game...");
+        System.exit(0);
     }
 
     // MODIFIES: this
@@ -170,6 +169,125 @@ public class ArcadeApp {
             System.out.println("Unable to read from file: " + JSON_STORE);
         }
     }
+
+    // Centres frame on desktop
+    // modifies: this
+    // effects:  location of frame is set so frame is centred on desktop
+    private void centreOnScreen() {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        setLocation((screenSize.width - getWidth()) / 2, (screenSize.height - getHeight()) / 2);
+    }
+
+    public void addCentredButton(int positionX, int positionY, String description, String actionCommand) {
+        JButton newButton = new JButton(description);
+        newButton.setForeground(Color.pink);
+        newButton.setBackground(Color.white);
+        newButton.setBounds(positionX, positionY, BUTTON_WIDTH, COMPONENT_HEIGHT);
+        newButton.setSize(BUTTON_WIDTH, COMPONENT_HEIGHT);
+        newButton.setActionCommand(actionCommand);
+        newButton.addActionListener(this);
+        add(newButton);
+    }
+
+    // Centres a string on the screen
+    // modifies: g
+    // effects:  centres the string horizontally onto g at vertical position yPos
+    private void addCentredTextArea(String string, int positionY, Font font, FontMetrics fm) {
+        int width = fm.stringWidth(string);
+        JTextArea newTextArea = new JTextArea(string);
+        newTextArea.setBounds((CrossyRoadGame.GAME_WIDTH - width) / 2, positionY,
+                width + TEXT_AREA_PADDING, COMPONENT_HEIGHT);
+        newTextArea.setFont(font);
+        newTextArea.setAlignmentY((CrossyRoadGame.GAME_WIDTH + TEXT_AREA_PADDING - width) / 2);
+        add(newTextArea);
+    }
+
+    // Centres a string on the screen
+    // modifies: g
+    // effects:  centres the string horizontally onto g at vertical position yPos
+    private void addCentredTextField(String string, int positionY, Font font, FontMetrics fm, String actionCommand) {
+        int width = fm.stringWidth(string);
+        JTextField newTextField = new JTextField(string);
+        newTextField.setBounds((CrossyRoadGame.GAME_WIDTH - width - TEXT_AREA_PADDING) / 2, positionY,
+                width + TEXT_AREA_PADDING, COMPONENT_HEIGHT);
+        newTextField.setFont(font);
+        newTextField.setHorizontalAlignment(JTextField.CENTER);
+        newTextField.setActionCommand(actionCommand);
+        newTextField.addActionListener(this);
+        newTextField.setBackground(Color.white);
+        add(newTextField);
+    }
+
+    private void crossyRoadPlayerSelection(String label) {
+        if (this.arcade.getPlayerProfileList("CROSSYROAD").stream()
+                .anyMatch(o -> o.getPlayerName().equals(label))) {
+            PlayerProfile chosenPlayer =
+                    this.arcade.getPlayerProfileList("CROSSYROAD").stream()
+                            .filter(o -> o.getPlayerName().equals(label)).findFirst().get();
+            startCrossyRoad(chosenPlayer);
+        }
+    }
+
+    private class KeyHandler extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            try {
+                eventHandler.handleKeyPress(e.getKeyCode());
+            } catch (QuitGameException ex) {
+                initMenu();
+            }
+        }
+    }
+
+    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        String action = ae.getActionCommand();
+        String text = null;
+        String label = null;
+        if (action.equals("newPlayerName")) {
+            JTextField textField = (JTextField)ae.getSource();
+            text = textField.getText();
+        } else {
+            JButton button = (JButton)ae.getSource();
+            label = button.getText();
+        }
+
+        switch (action) {
+            case "newProfile":
+                System.out.println("creating profile");
+                createNewProfile();
+                break;
+            case "playGame":
+                playGame();
+                break;
+            case "exit":
+                saveArcade();
+                break;
+            case "crossyRoadSelection":
+                crossyRoadPlayerSelection(label);
+                break;
+            case "newPlayerName":
+                System.out.println("set player name");
+                this.newPlayerName = text;
+                if (this.newGameMode != null) {
+                    addProfile();
+                }
+                break;
+            case "gameModeSelect":
+                this.newGameMode = label;
+                if (this.newPlayerName != null) {
+                    addProfile();
+                }
+                break;
+            case "gameChoice":
+                if (label.equals("CROSSYROAD")) {
+                    playCrossyRoad();
+                }
+        }
+    }
+
+
 }
 
 

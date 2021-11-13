@@ -2,18 +2,18 @@
     {
         "Profiles": [
             {
-                "levelAchieved": 1,
-                "playerName": "pleb1",
-                "pointsAchieved": 0
-            },
-            {
-                "levelAchieved": 2,
-                "playerName": "scottgay",
-                "pointsAchieved": 0
-            },
-            {
                 "levelAchieved": 6,
                 "playerName": "alex",
+                "pointsAchieved": 0
+            },
+            {
+                "levelAchieved": 1,
+                "playerName": "testplayer",
+                "pointsAchieved": 0
+            },
+            {
+                "levelAchieved": 1,
+                "playerName": "test01",
                 "pointsAchieved": 0
             }
         ],
@@ -22,7 +22,7 @@
     {
         "Profiles": [{
             "levelAchieved": 1,
-            "playerName": "pleb2",
+            "playerName": "player 2",
             "pointsAchieved": 0
         }],
         "Game Name": "MEMORY"

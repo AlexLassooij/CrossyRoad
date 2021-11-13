@@ -14,8 +14,8 @@ import java.util.stream.Stream;
 // Represents a reader that reads arcade from JSON data stored in file
 
 public class JsonReader {
-    private String source;
-    private Arcade arcade;
+    private final String source;
+    private final Arcade arcade;
 
     // EFFECTS: constructs reader to read from source file
     public JsonReader(String source) {
@@ -37,7 +37,7 @@ public class JsonReader {
         StringBuilder contentBuilder = new StringBuilder();
 
         try (Stream<String> stream = Files.lines(Paths.get(source), StandardCharsets.UTF_8)) {
-            stream.forEach(s -> contentBuilder.append(s));
+            stream.forEach(contentBuilder::append);
         }
         return contentBuilder.toString();
     }

@@ -1,25 +1,16 @@
 package model;
 
-import java.util.Hashtable;
-import java.util.Random;
+import java.awt.*;
 
 public class CrossyRoadCar {
     private int headPositionX;
     private int headPositionY;
-    private int velocity;
-    private int carLength;
-    private int updatesUntilNextMove;
-    private String movementDirection;
-    private int carIdentifier;
-    private String carColour;
-    private static final String ANSI_RED = "\u001B[31m";
-    private static final String ANSI_GREEN = "\u001B[32m";
-    private static final String ANSI_YELLOW = "\u001B[33m";
-    private static final String ANSI_BLUE = "\u001B[34m";
-    private static final String ANSI_PURPLE = "\u001B[35m";
-    private static final String ANSI_CYAN = "\u001B[36m";
-    private static final String[] ANSI_KEYS = new String[]{ANSI_RED, ANSI_GREEN, ANSI_YELLOW, ANSI_BLUE, ANSI_PURPLE,
-            ANSI_CYAN};
+    private final int velocity;
+    private final int carLength;
+    private int delayTime;
+    private final String movementDirection;
+    private final int carIdentifier;
+    private final Color carColour;
 
     /*
      * REQUIRES:headPositionX and headPositionY >= 0,
@@ -30,16 +21,15 @@ public class CrossyRoadCar {
      *          random ANSI Key is generated for the car's colour
      */
     public CrossyRoadCar(int headPositionX, int headPositionY, int velocity, int carLength,
-                         int carIdentifier, String movementDirection) {
+                         int carIdentifier, int delayTime, String movementDirection) {
         this.headPositionX = headPositionX;
         this.headPositionY = headPositionY;
         this.velocity = velocity;
         this.carLength = carLength;
         this.carIdentifier = carIdentifier;
         this.movementDirection = movementDirection;
-        Random rand = new Random();
-        int randomIndex = rand.nextInt(ANSI_KEYS.length);
-        this.carColour = ANSI_KEYS[randomIndex];
+        this.delayTime = delayTime;
+        this.carColour = Colors.getRandomColor();
     }
 
     /*
@@ -48,19 +38,21 @@ public class CrossyRoadCar {
      * EFFECTS: moves the car's head one unit to the left or right
      */
     public void moveCar() {
-        if (this.movementDirection.equals("left")) {
-            this.headPositionX -= 1;
-        } else {
-            this.headPositionX += 1;
+        if (delayTime >= 0) {
+            delayTime -= 1;
+            return;
         }
-
-
+        if (this.movementDirection.equals("left")) {
+            this.headPositionX -= this.velocity;
+        } else {
+            this.headPositionX += this.velocity;
+        }
     }
 
     /*
      * EFFECTS : returns car's ANSI key that represents its colour
      */
-    public String getCarColour() {
+    public Color getCarColour() {
         return this.carColour;
     }
 
@@ -76,6 +68,13 @@ public class CrossyRoadCar {
      */
     public int getCarIdentifier() {
         return carIdentifier;
+    }
+
+    /*
+     * EFFECTS : returns car's identifier (ID)
+     */
+    public int getCarLength() {
+        return carLength;
     }
 
     /*
@@ -96,18 +95,7 @@ public class CrossyRoadCar {
         this.headPositionY = positionY;
     }
 
-    /*
-     * REQUIRES: headPositionX, headPositionY and carLength are all of
-     *           type Integer
-     * EFFECTS: returns a Hashtable containing information about the
-     *          car's position and its length
-     */
-    public Hashtable<String, Integer> getCarInformation() {
-        Hashtable<String, Integer> infoTable = new Hashtable<>();
-        infoTable.put("positionX", this.headPositionX);
-        infoTable.put("positionY", this.headPositionY);
-        infoTable.put("carLength", this.carLength);
-
-        return infoTable;
+    public int getVelocity() {
+        return this.velocity;
     }
 }
