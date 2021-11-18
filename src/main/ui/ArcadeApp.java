@@ -48,6 +48,7 @@ public class ArcadeApp extends JFrame implements ActionListener {
         //displayOptions();
         jsonReader = new JsonReader(JSON_STORE);
         loadArcade();
+        addKeyListener(new KeyHandler());
     }
 
     /*
@@ -141,7 +142,6 @@ public class ArcadeApp extends JFrame implements ActionListener {
         pack();
         repaint();
         this.eventHandler = new CrossyRoadEventHandler(runner.getCrossyRoadGame());
-        addKeyListener(new KeyHandler());
         // instead, add arcadeTimer that will display arcade menu if gameStatus is quit
     }
 

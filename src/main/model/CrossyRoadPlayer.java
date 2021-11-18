@@ -24,8 +24,11 @@ public class CrossyRoadPlayer {
     public void movePlayer(int directionOfMovement) {
         if (directionOfMovement == KeyEvent.VK_W || directionOfMovement == KeyEvent.VK_S) {
             this.positionY = checkBoundariesAndMove(directionOfMovement, this.positionY);
+            System.out.println(positionY);
         } else {
             this.positionX = checkBoundariesAndMove(directionOfMovement, this.positionX);
+            System.out.println(positionX);
+
         }
     }
 
