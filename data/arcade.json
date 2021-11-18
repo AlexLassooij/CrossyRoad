@@ -20,11 +20,18 @@
         "Game Name": "CROSSYROAD"
     },
     {
-        "Profiles": [{
-            "levelAchieved": 1,
-            "playerName": "player 2",
-            "pointsAchieved": 0
-        }],
+        "Profiles": [
+            {
+                "levelAchieved": 1,
+                "playerName": "player 2",
+                "pointsAchieved": 0
+            },
+            {
+                "levelAchieved": 1,
+                "playerName": "memorytest2",
+                "pointsAchieved": 0
+            }
+        ],
         "Game Name": "MEMORY"
     }
 ]

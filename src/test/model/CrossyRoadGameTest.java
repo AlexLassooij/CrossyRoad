@@ -3,12 +3,12 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ui.GameBoardGenerator;
+import ui.GameBoard;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
+import java.awt.event.KeyEvent;
 import java.util.List;
 
+import static model.CrossyRoadGame.GAME_WIDTH;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CrossyRoadGameTest {
@@ -18,7 +18,7 @@ public class CrossyRoadGameTest {
     @BeforeEach
     void setUpTest() {
         testPlayer = new PlayerProfile("testPlayer");
-        testGame = new CrossyRoadGame(testPlayer, false);
+        testGame = new CrossyRoadGame(testPlayer, true);
     }
 
     @Test
@@ -40,109 +40,78 @@ public class CrossyRoadGameTest {
 
     @Test
     void testSetUpCrossyRoad() {
-        assertEquals(testGame.getCars().size(), testGame.getNumCars());
+        assertEquals(testGame.getCars().size(), testGame.getNumRowsWithCars());
 
     }
     @Test
     void testConfigureDifficulty(){
         testGame.configureDifficulty();
-        assertEquals("START", testGame.getGameStatus());
-        assertEquals(1000, testGame.getMovementInterval());
-        assertEquals(3, testGame.getNumCars());
-        assertEquals(5, testGame.getGameHeight());
+        assertEquals(5, testGame.getNumRowsWithCars());
+        assertEquals(700, testGame.getGameHeight());
 
         testGame.increaseLevel();
         testGame.configureDifficulty();
-        assertEquals("START", testGame.getGameStatus());
-        assertEquals(950, testGame.getMovementInterval());
-        assertEquals(4, testGame.getNumCars());
-        assertEquals(7, testGame.getGameHeight());
+        assertEquals(6, testGame.getNumRowsWithCars());
+        assertEquals(900, testGame.getGameHeight());
     }
 
     @Test
     void testMoveCars() {
+        testGame.setCurrentLevel(1);
+        testGame.setUpCrossyRoad();
         List<CrossyRoadCar> testCars = testGame.getCars();
-        List<Integer> startingPositons = new ArrayList<>();
         for (CrossyRoadCar testCar : testCars) {
-            startingPositons.add(testCar.getCarPositionX());
+            System.out.println(testCar.getCarPositionX());
+            testCar.setDelayTime(0);
         }
         testGame.moveCars();
-        for (int i = 0; i < testGame.getNumCars(); i++) {
-            int startingPosition = startingPositons.get(i);
-            CrossyRoadCar testCar = testCars.get(i);
-            if (startingPosition == 0) {
-                assertEquals(1, testCar.getCarPositionX());
+        for (CrossyRoadCar testCar : testGame.getCars()) {
+            System.out.println(testCar.getCarIdentifier());
+            if (testCar.getMovementDirection().equals("right")) {
+                assertEquals(testCar.getCarLength() * -1 * GameBoard.PIXELS_PER_UNIT + testCar.getVelocity(),
+                        testCar.getCarPositionX());
             } else {
-                assertEquals(CrossyRoadGame.GAME_WIDTH - 2, testCar.getCarPositionX());
+                assertEquals(CrossyRoadGame.GAME_WIDTH + testCar.getCarLength()  * GameBoard.PIXELS_PER_UNIT - testCar.getVelocity(),
+                        testCar.getCarPositionX());
             }
         }
-
-
-        testGame.clearCars();
-        testGame.setNumCars(testGame.getGameHeight());
-        testGame.generateCars(testGame.getNumCars());
-        testGame.getCars().add(new CrossyRoadCar(0, 0, 2, 3, 1, "right"));
-        for (int i = 0; i < CrossyRoadGame.GAME_WIDTH / 2; i++) {
-            testGame.moveCars();
-        }
-        assertEquals("FAILED", testGame.getGameStatus());
-
-        for (int i = 0; i < testGame.getNumCars(); i++) {
-            CrossyRoadCar nextCar = testGame.getCars().get(i);
-            if (nextCar.getCarPositionY() == 0) {
-                CrossyRoadCar newCar = new CrossyRoadCar(0, 1, 2, 3, 1, "right");
-                testGame.getCars().set(i, newCar);
-                for (int j = 0; j < CrossyRoadGame.GAME_WIDTH + 1; j++) {
-                    testGame.moveCars();
-
-                    assertFalse(testGame.isCarOutOfBoundary(newCar));
-                }
-                testGame.moveCars();
-                assertTrue(testGame.isCarOutOfBoundary(newCar));
-            }
-        }
-
-    {
-
-    }
-
-
 
 
     }
 
     @Test
     void testisCarOutOfBoundary() {
-        CrossyRoadCar testCar = new CrossyRoadCar(-2, 0, 2, 3,
-                3, "left");
+        CrossyRoadCar testCar = new CrossyRoadCar(-300, 0, 2, 3,
+                3, 0, "left");
         assertFalse(testGame.isCarOutOfBoundary(testCar));
-        testCar = new CrossyRoadCar(-2, 0, 2, 2,
-                3, "left");
+        testCar = new CrossyRoadCar(-300, 0, 2, 2,
+                3, 0, "left");
         assertTrue(testGame.isCarOutOfBoundary(testCar));
     }
 
     @Test
     void testCheckCollision() {
-        CrossyRoadCar testCar = new CrossyRoadCar(0, 0, 2, 3,
-                3, "right");
+        CrossyRoadCar testCar = new CrossyRoadCar(0, 0, 1, 3,
+                3, 0, "right");
         for (int i = 0; i < CrossyRoadGame.GAME_WIDTH / 2; i++) {
             testCar.moveCar();
         }
         assertTrue(testGame.checkCollision(testCar));
-        testCar.moveCar();
-        assertTrue(testGame.checkCollision(testCar));
-        testCar.moveCar();
-        assertTrue(testGame.checkCollision(testCar));
-        testCar.moveCar();
+        for (int i = 0; i < 250; i++) {
+            testCar.moveCar();
+        }
+        assertFalse(testGame.checkCollision(testCar));
+        testGame.getCrossyRoadPlayer().movePlayer(KeyEvent.VK_A);
         assertFalse(testGame.checkCollision(testCar));
     }
+
 
 
 
     @Test
     void testGenerateCoordinateYList() {
         List<Integer> coordinateListY = testGame.generateCoordinateListY();
-        assertEquals(coordinateListY.size(), testGame.getGameHeight());
+        assertEquals(coordinateListY.size(), testGame.getGameHeight() / GameBoard.PIXELS_PER_UNIT);
         for (int positionY : coordinateListY) {
             assertTrue(positionY >= 0 && positionY < testGame.getGameHeight());
         }
@@ -150,57 +119,23 @@ public class CrossyRoadGameTest {
     }
 
     @Test
-    void testGenerateCarLengthList() {
-        List<Integer> carLengthList = testGame.generateCarLengthList();
-        assertEquals(carLengthList.size(), CrossyRoadGame.MAX_CAR_LENGTH);
-        for (int carLength : carLengthList) {
-            assertTrue(carLength >= 1 && carLength <= CrossyRoadGame.MAX_CAR_LENGTH);
-        }
-    }
-
-    @Test
-    void testGenerateCarInfo() {
-        testGame.increaseLevel();
-        List<Integer> coordinateListY = testGame.generateCoordinateListY();
-        List<Integer> carLengthList = testGame.generateCarLengthList();
-        Hashtable<String, Integer> infoTable = testGame.generateCarInfo(coordinateListY, carLengthList);
-        int positionX = infoTable.get("positionX");
-        int positionY = infoTable.get("positionY");
-        int carLength = infoTable.get("carLength");
-        int velocity = infoTable.get("velocity");
-        assertTrue(positionX >= 0 && positionY < CrossyRoadGame.GAME_WIDTH);
-        assertTrue(positionY >= 0 && positionY < testGame.getGameHeight());
-        assertTrue(carLength >= 1 && carLength <= CrossyRoadGame.MAX_CAR_LENGTH);
-        assertTrue(velocity >= 1 && velocity <= 2);
-
-
-
-    }
-
-    @Test
     void testGenerateCars() {
         testGame.clearCars();
-        testGame.generateCars(testGame.getGameHeight());
-        List<Integer> occupiedYList = new ArrayList<>();
-        for (CrossyRoadCar car : testGame.getCars()) {
-            int positionY = car.getCarPositionY();
-            assertFalse(occupiedYList.contains(positionY));
-            occupiedYList.add(positionY);
-        }
+        testGame.generateCars(testGame.getNumRowsWithCars());
+        List<CrossyRoadCar> cars = testGame.getCars();
+        assertEquals(5, cars.size());
     }
 
     @Test
     void testReplaceCar() {
-        CrossyRoadCar testCar = testGame.getCars().get(0);
-        int carIdentifier = testCar.getCarIdentifier();
-        int positionY = testCar.getCarPositionY();
-        CrossyRoadCar replacementCar = testGame.replaceCar(carIdentifier, positionY);
-        assertEquals(carIdentifier, replacementCar.getCarIdentifier());
+        CrossyRoadCar testCar = new CrossyRoadCar(0, 0, 1 ,1 , 1, 0, "right");
+        CrossyRoadCar testCar2 = new CrossyRoadCar(GAME_WIDTH, 0, 1 ,1 , 2, 0,  "left");
+        CrossyRoadCar replacementCar = testGame.replaceCar(testCar);
+        assertEquals(1, replacementCar.getCarIdentifier());
+        replacementCar = testGame.replaceCar(testCar2);
+        assertEquals(2, replacementCar.getCarIdentifier());
+        assertEquals(GAME_WIDTH + replacementCar.getCarLength()  * GameBoard.PIXELS_PER_UNIT, replacementCar.getCarPositionX());
 
-        testGame.setNumCars(testGame.getGameHeight());
-        replacementCar = testGame.replaceCar(carIdentifier, positionY);
-        assertEquals(carIdentifier, replacementCar.getCarIdentifier());
-        assertEquals(positionY, replacementCar.getCarPositionY());
     }
 
     @Test
@@ -215,15 +150,15 @@ public class CrossyRoadGameTest {
     }
 
     @Test
-    void testGetGameBoard() {
-        GameBoardGenerator gameBoard = testGame.getGameBoard();
-        assertEquals(testGame.getGameBoard(), gameBoard);
-    }
-
-    @Test
     void testGetCrossyRoadPlayer() {
         CrossyRoadPlayer player = testGame.getCrossyRoadPlayer();
         assertEquals(testGame.getCrossyRoadPlayer(), player);
+    }
+
+    @Test
+    void setLevelTest() {
+        testGame.setCurrentLevel(2);
+        assertEquals(2, testGame.getCurrentLevel());
     }
 
 }

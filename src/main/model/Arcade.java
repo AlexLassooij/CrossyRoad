@@ -9,8 +9,8 @@ import java.util.*;
 
 public class Arcade {
     private static final String JSON_STORE = "./data/arcade.json";
-    private List<PlayerProfile> crossyRoadPlayerProfileList;
-    private List<PlayerProfile> memoryPlayerProfileList;
+    private final List<PlayerProfile> crossyRoadPlayerProfileList;
+    private final List<PlayerProfile> memoryPlayerProfileList;
     private JsonWriter jsonWriter;
 
     //private JsonReader jsonReader;

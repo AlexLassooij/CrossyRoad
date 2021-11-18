@@ -1,11 +1,9 @@
 package ui;
 
-import model.CrossyRoadEventHandler;
 import model.CrossyRoadGame;
 import model.PlayerProfile;
 
 import javax.swing.*;
-import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,8 +12,8 @@ public class CrossyRoadRun extends JPanel implements ActionListener {
     private final CrossyRoadGame crossyRoadGame;
     private final GameBoard gameBoard;
     private final JScrollPane scrollPane;
-    private PlayerProfile player;
-    private Font arcadeFont = new Font("Arial",Font.BOLD, 20);
+    private final PlayerProfile player;
+    private final Font arcadeFont = new Font("Arial",Font.BOLD, 20);
     public static final  int MOVE_INTERVAL = 5;
     private Timer updateTimer;
 
@@ -94,14 +92,6 @@ public class CrossyRoadRun extends JPanel implements ActionListener {
     }
 
     private void setScrollBar() {
-//        int scrollBarPosition =
-//                this.scrollPane.getVerticalScrollBar().getMaximum();
-//        if (this.crossyRoadGame.getCrossyRoadPlayer().getPositionY() >= 200) {
-//            System.out.println("PlayerPos" + this.crossyRoadGame.getCrossyRoadPlayer().getPositionY());
-//            scrollBarPosition -= this.crossyRoadGame.getCrossyRoadPlayer().getPositionY();
-//            scrollBarPosition += 200;
-//        }
-//        System.out.println("scrollbar position: " + scrollBarPosition);
         if (!this.crossyRoadGame.getGameStatus().equals("ONGOING")) {
             setScrollBarToTop();
         } else {
@@ -118,12 +108,6 @@ public class CrossyRoadRun extends JPanel implements ActionListener {
 
     public CrossyRoadGame getCrossyRoadGame() {
         return this.crossyRoadGame;
-    }
-
-
-
-    public JScrollBar getScrollBar() {
-        return this.scrollPane.getVerticalScrollBar();
     }
 
     @Override

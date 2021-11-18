@@ -2,6 +2,9 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ui.GameBoard;
+
+import java.awt.event.KeyEvent;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,44 +19,43 @@ public class CrossyRoadPlayerTest {
 
     @Test
     void testConstructor() {
-        assertEquals(CrossyRoadGame.GAME_WIDTH / 2, testCrossyRoadPlayer.getPositionX());
+        assertEquals(((CrossyRoadGame.GAME_WIDTH / 100) / 2) * 100, testCrossyRoadPlayer.getPositionX());
         assertEquals(0, testCrossyRoadPlayer.getPositionY());
         assertEquals("testPlayer", testCrossyRoadPlayer.getCrossyRoadPlayerName());
+        assertNotNull(testCrossyRoadPlayer.getPlayerColor());
     }
 
     @Test
     void testMovePlayer() {
-        testCrossyRoadPlayer.movePlayer("w");
-        assertEquals(1, testCrossyRoadPlayer.getPositionY());
-        testCrossyRoadPlayer.movePlayer("w");
-        assertEquals(2, testCrossyRoadPlayer.getPositionY());
-        testCrossyRoadPlayer.movePlayer("a");
-        assertEquals(CrossyRoadGame.GAME_WIDTH / 2 - 1, testCrossyRoadPlayer.getPositionX());
+        testCrossyRoadPlayer.movePlayer(KeyEvent.VK_W);
+        assertEquals(GameBoard.PIXELS_PER_UNIT, testCrossyRoadPlayer.getPositionY());
+        testCrossyRoadPlayer.movePlayer(KeyEvent.VK_W);
+        assertEquals(2 * GameBoard.PIXELS_PER_UNIT, testCrossyRoadPlayer.getPositionY());
+        testCrossyRoadPlayer.movePlayer(KeyEvent.VK_A);
+        assertEquals(((CrossyRoadGame.GAME_WIDTH / 100) / 2) * 100 - GameBoard.PIXELS_PER_UNIT, testCrossyRoadPlayer.getPositionX());
     }
-
     @Test
     void testCheckBoundariesAndMove() {
-        for (int i = 0; i < CrossyRoadGame.GAME_WIDTH / 2; i++) {
-            testCrossyRoadPlayer.movePlayer("a");
-            assertEquals(CrossyRoadGame.GAME_WIDTH / 2 - (i + 1), testCrossyRoadPlayer.getPositionX());
+        for (int i = 0; i < ((CrossyRoadGame.GAME_WIDTH / 100) / 2); i++) {
+            testCrossyRoadPlayer.movePlayer(KeyEvent.VK_A);
+            assertEquals(((CrossyRoadGame.GAME_WIDTH / 100) / 2) * 100 - (i + 1) * GameBoard.PIXELS_PER_UNIT,
+                    testCrossyRoadPlayer.getPositionX());
         }
-        testCrossyRoadPlayer.movePlayer("a");
+        testCrossyRoadPlayer.movePlayer(KeyEvent.VK_A);
         assertEquals(0, testCrossyRoadPlayer.getPositionX());
-        testCrossyRoadPlayer.checkBoundariesAndMove("s", 0);
+        testCrossyRoadPlayer.checkBoundariesAndMove(KeyEvent.VK_S, 0);
         assertEquals(0, testCrossyRoadPlayer.getPositionX());
-
-
         assertEquals(0, testCrossyRoadPlayer.checkBoundariesAndMove(
-                "a", 0));
+                KeyEvent.VK_A, 0));
         assertEquals(0, testCrossyRoadPlayer.checkBoundariesAndMove(
-                "s", 0));
-        assertEquals(6, testCrossyRoadPlayer.checkBoundariesAndMove(
-                "w", 5));
-        assertEquals(CrossyRoadGame.GAME_WIDTH - 1, testCrossyRoadPlayer.checkBoundariesAndMove(
-                "d", CrossyRoadGame.GAME_WIDTH - 1));
-        assertEquals(CrossyRoadGame.GAME_WIDTH - 1, testCrossyRoadPlayer.checkBoundariesAndMove(
-                "d", CrossyRoadGame.GAME_WIDTH - 2));
+                KeyEvent.VK_S, 0));
+        assertEquals(500 + GameBoard.PIXELS_PER_UNIT, testCrossyRoadPlayer.checkBoundariesAndMove(
+                KeyEvent.VK_W, 500));
+        assertEquals(CrossyRoadGame.GAME_WIDTH - GameBoard.PIXELS_PER_UNIT, testCrossyRoadPlayer.checkBoundariesAndMove(
+                KeyEvent.VK_D, CrossyRoadGame.GAME_WIDTH - GameBoard.PIXELS_PER_UNIT));
+        assertEquals(CrossyRoadGame.GAME_WIDTH - GameBoard.PIXELS_PER_UNIT, testCrossyRoadPlayer.checkBoundariesAndMove(
+                KeyEvent.VK_D, CrossyRoadGame.GAME_WIDTH - 2 * GameBoard.PIXELS_PER_UNIT));
         assertEquals(10, testCrossyRoadPlayer.checkBoundariesAndMove(
-                "test", 10));
+                KeyEvent.VK_SPACE, 10));
     }
 }

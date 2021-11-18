@@ -13,17 +13,16 @@ public class CrossyRoadGame {
     public static final int MAX_VELOCITY = 4;
     private int gameHeight;
     private int currentLevel;
-    private int numCars;
+    private int numRowsWithCars;
     private int carsPerRow;
     private String gameStatus;
     private CrossyRoadPlayer crossyRoadPlayer;
     private final PlayerProfile arcadePlayer;
-    private List<CrossyRoadCar> cars;
+    private final List<CrossyRoadCar> cars;
 
     // START : game waiting to be initialized
     // ONGOING : player is playing
-    // FAILED : player lost the game --> ask for reset or quit
-    // QUIT : player has quit the game
+    // FAILED : player lost the game --> ask for reset or quit : player has quit the game
 
     /*
      * REQUIRES: player is a PlayerProfile object
@@ -35,8 +34,6 @@ public class CrossyRoadGame {
      *          calls configureDifficulty and setUpCrossyRoad
      */
     public CrossyRoadGame(PlayerProfile player, boolean restartLevel) {
-//        BufferedReader bf = new BufferedReader(new InputStreamReader(System.in));
-//        Console con = System.console();
         this.arcadePlayer = player;
         if (restartLevel) {
             this.currentLevel = 1;
@@ -58,7 +55,7 @@ public class CrossyRoadGame {
      */
     public void configureDifficulty() {
         this.gameHeight = (7 + (2 * (this.currentLevel - 1))) * 100;
-        this.numCars = 5 + (this.currentLevel - 1);
+        this.numRowsWithCars = 5 + (this.currentLevel - 1);
         this.carsPerRow = Math.min((1 + (this.currentLevel / 3)), 3);
     }
 
@@ -74,7 +71,7 @@ public class CrossyRoadGame {
     public void setUpCrossyRoad() {
         this.crossyRoadPlayer = new CrossyRoadPlayer(this.arcadePlayer.getPlayerName());
         clearCars();
-        generateCars(this.numCars);
+        generateCars(this.numRowsWithCars);
         this.gameStatus = "ONGOING";
     }
 
@@ -101,9 +98,6 @@ public class CrossyRoadGame {
         for (int i = 0;i < numCars;i++) {
             generateCarRow(coordinateListY);
         }
-//            if (coordinateListY.size() == 0) {
-//                coordinateListY = generateCoordinateListY();
-//            }
     }
 
 
@@ -124,16 +118,17 @@ public class CrossyRoadGame {
      */
     public CrossyRoadCar replaceCar(CrossyRoadCar prevCar) {
         String movementDirection = prevCar.getMovementDirection();
-        int positionX;
-        if (movementDirection.equals("right")) {
-            positionX = GameBoard.PIXELS_PER_UNIT * -1;
-        } else {
-            positionX = GAME_WIDTH;
-        }
+
         int carLength = getRandomCarLength();
         int positionY = prevCar.getCarPositionY();
         int velocity = prevCar.getVelocity();
         int carIdentifier = prevCar.getCarIdentifier();
+        int positionX;
+        if (movementDirection.equals("right")) {
+            positionX = carLength * -1 * GameBoard.PIXELS_PER_UNIT;
+        } else {
+            positionX = GAME_WIDTH + carLength  * GameBoard.PIXELS_PER_UNIT;
+        }
         return new CrossyRoadCar(positionX, positionY, velocity, carLength, carIdentifier,
                 0, movementDirection);
     }
@@ -222,6 +217,7 @@ public class CrossyRoadGame {
             }
             // if car is out of boundary, remove from game and create a new one
             if (isCarOutOfBoundary(nextCar)) {
+                System.out.println("car out of boundary");
                 this.cars.set(i, replaceCar(nextCar));
             }
         }
@@ -270,7 +266,7 @@ public class CrossyRoadGame {
 
         // right-bound car : headPositionX will be > GAME_WIDTH
         // check if left-hand sections of car are still within boundaries
-        if (carPositionX >= GAME_WIDTH || carPositionX < 0) {
+        if (carPositionX >= GAME_WIDTH + GameBoard.PIXELS_PER_UNIT || carPositionX < -1 * GameBoard.PIXELS_PER_UNIT) {
             if (carLength == 1) {
                 return true;
             }
@@ -313,8 +309,8 @@ public class CrossyRoadGame {
         return this.cars;
     }
 
-    public int getNumCars() {
-        return this.numCars;
+    public int getNumRowsWithCars() {
+        return this.numRowsWithCars;
     }
 
     public int getCurrentLevel() {
@@ -327,10 +323,6 @@ public class CrossyRoadGame {
 
     public void increaseLevel() {
         this.currentLevel += 1;
-    }
-
-    public void setNumCars(int numCars) {
-        this.numCars = numCars;
     }
 
     public void setCurrentLevel(int level) {

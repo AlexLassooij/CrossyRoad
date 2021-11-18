@@ -2,9 +2,10 @@ package model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ui.GameBoard;
 
-import java.util.Hashtable;
 
+import static model.CrossyRoadGame.GAME_WIDTH;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -15,38 +16,57 @@ public class CrossyRoadCarTest {
 
     @BeforeEach
     void setUpTest() {
-        testCar = new CrossyRoadCar(0, 0, 1 ,1 , 1, "right");
-        testCar2 = new CrossyRoadCar(4, 0, 1 ,1 , 2, "left");
+        testCar = new CrossyRoadCar(0, 0, 1 ,1 , 1, 0, "right");
+        testCar2 = new CrossyRoadCar(GAME_WIDTH, 0, 1 ,1 , 2, 0,  "left");
+    }
+
+    @Test
+    void testConstructor() {
+        assertNotNull(testCar.getCarColour());
+
     }
 
     @Test
     void testMoveCar() {
-        testCar.moveCar();
-        assertEquals(1, testCar.getCarPositionX());
-        testCar.moveCar();
-        assertEquals(2, testCar.getCarPositionX());
-        testCar.moveCar();
-        assertEquals(3, testCar.getCarPositionX());
+        for (int i = 0 ; i < GameBoard.PIXELS_PER_UNIT; i++) {
+            testCar.moveCar();
+        }
+        assertEquals(GameBoard.PIXELS_PER_UNIT, testCar.getCarPositionX());
+        for (int i = 0 ; i < GameBoard.PIXELS_PER_UNIT; i++) {
+            testCar.moveCar();
+        }
+        assertEquals(2 * GameBoard.PIXELS_PER_UNIT, testCar.getCarPositionX());
+        for (int i = 0 ; i < GameBoard.PIXELS_PER_UNIT; i++) {
+            testCar.moveCar();
+        }
+        assertEquals(3 * GameBoard.PIXELS_PER_UNIT, testCar.getCarPositionX());
 
-        testCar2.moveCar();
-        assertEquals(3, testCar2.getCarPositionX());
-        testCar2.moveCar();
-        assertEquals(2, testCar2.getCarPositionX());
-        testCar2.moveCar();
-        assertEquals(1, testCar2.getCarPositionX());
+        for (int i = 0 ; i < GameBoard.PIXELS_PER_UNIT; i++) {
+            testCar2.moveCar();
+        }
+        assertEquals(GAME_WIDTH - GameBoard.PIXELS_PER_UNIT, testCar2.getCarPositionX());
+        for (int i = 0 ; i < GameBoard.PIXELS_PER_UNIT; i++) {
+            testCar2.moveCar();
+        }
+        assertEquals(GAME_WIDTH - 2 * GameBoard.PIXELS_PER_UNIT, testCar2.getCarPositionX());
+        for (int i = 0 ; i < GameBoard.PIXELS_PER_UNIT; i++) {
+            testCar2.moveCar();
+        }
+        assertEquals(GAME_WIDTH - 3 * GameBoard.PIXELS_PER_UNIT, testCar2.getCarPositionX());
     }
 
     @Test
     void testGetCarInformation() {
-        Hashtable<String, Integer> infoTable = testCar.getCarInformation();
-        assertEquals(0, infoTable.get("positionX"));
-        assertEquals(0, infoTable.get("positionY"));
-        assertEquals(1, infoTable.get("carLength"));
+        assertEquals(0, testCar.getCarPositionX());
+        assertEquals(0, testCar.getCarPositionY());
+        assertEquals(1, testCar.getCarLength());
 
-        infoTable = testCar2.getCarInformation();
-        assertEquals(4, infoTable.get("positionX"));
-        assertEquals(0, infoTable.get("positionY"));
-        assertEquals(1, infoTable.get("carLength"));
+        for (int i = 0; i < 4; i++) {
+            testCar.moveCar();
+        }
+        assertEquals(4, testCar.getCarPositionX());
+        assertEquals(0, testCar.getCarPositionY());
+        assertEquals(1, testCar.getCarLength());
 
     }
 }

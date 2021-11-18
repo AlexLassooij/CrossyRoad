@@ -4,7 +4,7 @@ import java.awt.*;
 
 public class CrossyRoadCar {
     private int headPositionX;
-    private int headPositionY;
+    private final int headPositionY;
     private final int velocity;
     private final int carLength;
     private int delayTime;
@@ -38,7 +38,7 @@ public class CrossyRoadCar {
      * EFFECTS: moves the car's head one unit to the left or right
      */
     public void moveCar() {
-        if (delayTime >= 0) {
+        if (delayTime > 0) {
             delayTime -= 1;
             return;
         }
@@ -91,11 +91,11 @@ public class CrossyRoadCar {
         return this.headPositionX;
     }
 
-    public void setHeadPositionY(int positionY) {
-        this.headPositionY = positionY;
-    }
-
     public int getVelocity() {
         return this.velocity;
+    }
+
+    public void setDelayTime(int time) {
+        this.delayTime = time;
     }
 }

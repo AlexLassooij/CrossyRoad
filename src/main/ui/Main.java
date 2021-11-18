@@ -1,10 +1,5 @@
 package ui;
 
-import model.Colors;
-
-import java.awt.*;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.*;
 
 public class Main {

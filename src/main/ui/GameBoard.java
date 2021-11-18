@@ -7,7 +7,6 @@ import model.CrossyRoadPlayer;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class GameBoard extends JPanel {
     public static final int PIXELS_PER_UNIT = 100;
@@ -49,10 +48,6 @@ public class GameBoard extends JPanel {
                 displayCompletion(g);
                 break;
         }
-        //display whether to continue or not
-//        } else if (this.game.getGameStatus().equals("QUIT")) {
-//            //display goodbye message
-//        }
     }
 
     private void displayFailure(Graphics g) {
@@ -91,18 +86,6 @@ public class GameBoard extends JPanel {
      * MODIFIES: this
      * EFFECTS: prints the gameBoard containing all cars and the player in the standard output
      */
-//    public void printGameBoard(List<CrossyRoadCar> cars, CrossyRoadPlayer player, String gameStatus) {
-//        populateGameBoard(cars, player, gameStatus);
-//        StringBuilder gameBoardRow;
-//        for (int i = this.height - 1; i >= 0; i--) {
-//            gameBoardRow = new StringBuilder();
-//            for (int j = 0; j < this.width; j++) {
-//                gameBoardRow.append(this.gameBoard[i][j]);
-//            }
-//            System.out.println(gameBoardRow);
-//        }
-//
-//    }
 
     /*
      * MODIFIES: this
@@ -164,8 +147,6 @@ public class GameBoard extends JPanel {
     private void paintPlayer(Graphics g, CrossyRoadPlayer player) {
         Color previousColor = g.getColor();
         g.setColor(player.getPlayerColor());
-//        System.out.println("Player posX:" + player.getPositionX());
-//        System.out.println("Player posY:" + player.getPositionY());
         int positionX = player.getPositionX();
         int positionY = game.getGameHeight() - player.getPositionY();
         g.fillRect(positionX, positionY - PIXELS_PER_UNIT, PIXELS_PER_UNIT, PIXELS_PER_UNIT);

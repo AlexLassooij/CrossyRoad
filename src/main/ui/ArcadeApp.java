@@ -123,11 +123,6 @@ public class ArcadeApp extends JFrame implements ActionListener {
         this.newPlayerName = null;
         this.newGameMode = null;
         repaint();
-//        try {
-//            Thread.sleep(3000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
         initMenu();
 
     }
