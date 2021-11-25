@@ -25,3 +25,25 @@ experience for me to get more familiar with Object-Oriented Programming.
 - As a user, I want to be to choose what player profile I want to play a game with
 - As a user, I want to be able to navigate around the game board within the crossy road game
 - As a user, I want to be able to choose between proceeding to the next level or quitting the game
+
+###Phase 4: Task 2 
+Player moved to X: 600 Y: 600
+Thu Nov 25 15:07:21 PST 2021
+Car 1 moved to X: 1582 Y: 400
+Thu Nov 25 15:07:21 PST 2021
+Car 2 moved to X: -182 Y: 0
+Thu Nov 25 15:07:21 PST 2021
+Car 3 moved to X: 1482 Y: 200
+Thu Nov 25 15:07:21 PST 2021
+Car 4 moved to X: 1482 Y: 100
+Thu Nov 25 15:07:21 PST 2021
+Car 5 moved to X: -282 Y: 600
+Thu Nov 25 15:07:22 PST 2021
+Player moved to X: 600 Y: 700
+
+###Phase 4 : Task 3 
+If I had more time, I would definitely try to make my code more coherent. I think that many of my classes are
+quite large and could be split into smaller ones that have one specific responsibility. For example, CrossyRoadGame
+has many method for generating and replacing cars, which could be moved to a new CarFactory class. One more thing I 
+would like to improve is the way that the crossy road game returns to the main arcade screen. Right now, it is done 
+by throwing an exception, but I think that there is a better way to achieve this. 

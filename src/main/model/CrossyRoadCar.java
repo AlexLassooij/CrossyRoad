@@ -11,6 +11,7 @@ public class CrossyRoadCar {
     private final String movementDirection;
     private final int carIdentifier;
     private final Color carColour;
+    private EventLog logger;
 
     /*
      * REQUIRES:headPositionX and headPositionY >= 0,
@@ -30,6 +31,7 @@ public class CrossyRoadCar {
         this.movementDirection = movementDirection;
         this.delayTime = delayTime;
         this.carColour = Colors.getRandomColor();
+        this.logger = EventLog.getInstance();
     }
 
     /*
@@ -47,6 +49,8 @@ public class CrossyRoadCar {
         } else {
             this.headPositionX += this.velocity;
         }
+        logger.logEvent(new Event("Car " + this.carIdentifier
+                + " moved to X: " + this.headPositionX + " Y: " + headPositionY));
     }
 
     /*

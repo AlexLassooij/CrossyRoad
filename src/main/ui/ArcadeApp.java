@@ -2,6 +2,7 @@ package ui;
 
 import exceptions.QuitGameException;
 import model.*;
+import model.Event;
 import persistence.JsonReader;
 
 
@@ -24,6 +25,7 @@ public class ArcadeApp extends JFrame implements ActionListener {
     private final JsonReader jsonReader;
     private Arcade arcade;
     private CrossyRoadEventHandler eventHandler;
+    private CrossyRoadRun runner;
     private String newPlayerName = null;
     private String newGameMode = null;
     private final Font arcadeFont = new Font("Arial",Font.BOLD, 20);
@@ -132,11 +134,10 @@ public class ArcadeApp extends JFrame implements ActionListener {
      */
     private void startCrossyRoad(PlayerProfile player) {
         getContentPane().removeAll();
-        CrossyRoadRun runner = new CrossyRoadRun(player);
+        this.runner = new CrossyRoadRun(player);
         add(runner);
         pack();
         repaint();
-        this.eventHandler = new CrossyRoadEventHandler(runner.getCrossyRoadGame());
         // instead, add arcadeTimer that will display arcade menu if gameStatus is quit
     }
 
@@ -227,10 +228,17 @@ public class ArcadeApp extends JFrame implements ActionListener {
         @Override
         public void keyPressed(KeyEvent e) {
             try {
-                eventHandler.handleKeyPress(e.getKeyCode());
+                runner.getEventHandler().handleKeyPress(e.getKeyCode());
             } catch (QuitGameException ex) {
+                printEventLog();
                 initMenu();
             }
+        }
+    }
+
+    private void printEventLog() {
+        for (Event nextEvent : EventLog.getInstance()) {
+            System.out.println(nextEvent);
         }
     }
 
@@ -247,7 +255,6 @@ public class ArcadeApp extends JFrame implements ActionListener {
             JButton button = (JButton)ae.getSource();
             label = button.getText();
         }
-
         switch (action) {
             case "newProfile":
                 System.out.println("creating profile");
@@ -281,8 +288,6 @@ public class ArcadeApp extends JFrame implements ActionListener {
                 }
         }
     }
-
-
 }
 
 

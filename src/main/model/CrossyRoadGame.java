@@ -19,6 +19,7 @@ public class CrossyRoadGame {
     private CrossyRoadPlayer crossyRoadPlayer;
     private final PlayerProfile arcadePlayer;
     private final List<CrossyRoadCar> cars;
+    private EventLog logger;
 
     // START : game waiting to be initialized
     // ONGOING : player is playing
@@ -41,6 +42,7 @@ public class CrossyRoadGame {
             this.currentLevel = this.arcadePlayer.getLevelAchieved();
         }
         this.cars = new ArrayList<>();
+        this.logger = EventLog.getInstance();
         configureDifficulty();
         setUpCrossyRoad();
     }
@@ -75,7 +77,6 @@ public class CrossyRoadGame {
         this.gameStatus = "ONGOING";
     }
 
-
     /*
      * REQUIRES: numCars >= 1
      * MODIFIES: this
@@ -99,7 +100,6 @@ public class CrossyRoadGame {
             generateCarRow(coordinateListY);
         }
     }
-
 
     /*
      * REQUIRES:  0 <= formerPositionY < gameHeight
@@ -217,8 +217,11 @@ public class CrossyRoadGame {
             }
             // if car is out of boundary, remove from game and create a new one
             if (isCarOutOfBoundary(nextCar)) {
-                System.out.println("car out of boundary");
+                logger.logEvent(new Event("Car "
+                        + nextCar.getCarIdentifier() + " has left the game's boundaries"));
                 this.cars.set(i, replaceCar(nextCar));
+                logger.logEvent(new Event("Car " + nextCar.getCarIdentifier()
+                        + " has been replaced by a new car of length " + nextCar.getCarLength()));
             }
         }
     }

@@ -13,8 +13,9 @@ public class CrossyRoadRun extends JPanel implements ActionListener {
     private final GameBoard gameBoard;
     private final JScrollPane scrollPane;
     private final PlayerProfile player;
+    private CrossyRoadEventHandler eventHandler;
     private final Font arcadeFont = new Font("Arial",Font.BOLD, 20);
-    public static final  int MOVE_INTERVAL = 5;
+    public static final  int MOVE_INTERVAL = 500;
     private Timer updateTimer;
 
     /*
@@ -42,6 +43,7 @@ public class CrossyRoadRun extends JPanel implements ActionListener {
         this.player = player;
         this.crossyRoadGame = new CrossyRoadGame(this.player, true);
         this.gameBoard = new GameBoard(this.crossyRoadGame);
+        this.eventHandler = new CrossyRoadEventHandler(this.crossyRoadGame);
         this.scrollPane = new CrossyRoadScrollPane(this.gameBoard);
         add(scrollPane);
         setVisible(true);
@@ -123,5 +125,9 @@ public class CrossyRoadRun extends JPanel implements ActionListener {
                 this.crossyRoadGame.setCurrentLevel(this.player.getLevelAchieved());
                 break;
         }
+    }
+
+    public CrossyRoadEventHandler getEventHandler() {
+        return this.eventHandler;
     }
 }
