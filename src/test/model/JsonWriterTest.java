@@ -27,7 +27,7 @@ public class JsonWriterTest {
     void testWriterCommonCase() {
         try {
             Arcade arcade = new Arcade();
-            arcade.setjsonWriter( new JsonWriter(JSON_STORE));
+            arcade.setJsonWriter( new JsonWriter(JSON_STORE));
             PlayerProfile player1 = new PlayerProfile("player1");
             PlayerProfile player2 = new PlayerProfile("player2");
             PlayerProfile player3 = new PlayerProfile("player3");
@@ -37,7 +37,7 @@ public class JsonWriterTest {
             arcade.saveArcade();
             arcade.saveArcade();
             JsonReader jsonReader = new JsonReader(JSON_STORE);
-            arcade = jsonReader.read();
+            jsonReader.read(arcade);
 
             List<PlayerProfile> crossyroadPlayers = arcade.getPlayerProfileList("CROSSYROAD");
             List<PlayerProfile> memoryPlayers = arcade.getPlayerProfileList("MEMORY");

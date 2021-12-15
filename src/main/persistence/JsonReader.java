@@ -15,21 +15,20 @@ import java.util.stream.Stream;
 
 public class JsonReader {
     private final String source;
-    private final Arcade arcade;
+    private Arcade arcade;
 
     // EFFECTS: constructs reader to read from source file
     public JsonReader(String source) {
         this.source = source;
-        this.arcade = new Arcade();
     }
 
     // EFFECTS: reads workroom from file and returns it;
     // throws IOException if an error occurs reading data from file
-    public Arcade read() throws IOException {
+    public void read(Arcade arcade) throws IOException {
+        this.arcade = arcade;
         String jsonData = readFile(source);
         JSONArray arcadeArray = new JSONArray(jsonData);
         parseArcade(arcadeArray);
-        return this.arcade;
     }
 
     // EFFECTS: reads source file as string and returns it

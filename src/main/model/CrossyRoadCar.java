@@ -1,5 +1,7 @@
 package model;
 
+import ui.CrossyRoadRun;
+
 import java.awt.*;
 
 public class CrossyRoadCar {
@@ -41,16 +43,16 @@ public class CrossyRoadCar {
      */
     public void moveCar() {
         if (delayTime > 0) {
-            delayTime -= 1;
+            delayTime -= CrossyRoadRun.MOVE_MULTIPLIER;
             return;
         }
         if (this.movementDirection.equals("left")) {
-            this.headPositionX -= this.velocity;
+            this.headPositionX -= this.velocity * CrossyRoadRun.MOVE_MULTIPLIER;
         } else {
-            this.headPositionX += this.velocity;
+            this.headPositionX += this.velocity * CrossyRoadRun.MOVE_MULTIPLIER;
         }
-        logger.logEvent(new Event("Car " + this.carIdentifier
-                + " moved to X: " + this.headPositionX + " Y: " + headPositionY));
+//        logger.logEvent(new Event("Car " + this.carIdentifier
+//                + " moved to X: " + this.headPositionX + " Y: " + headPositionY));
     }
 
     /*

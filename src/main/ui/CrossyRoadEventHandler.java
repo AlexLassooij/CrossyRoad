@@ -9,8 +9,9 @@ import java.awt.event.KeyEvent;
 public class CrossyRoadEventHandler {
     private final CrossyRoadGame game;
 
-    public CrossyRoadEventHandler(CrossyRoadGame game) {
-        this.game = game;
+
+    public CrossyRoadEventHandler() {
+        this.game = CrossyRoadGame.getInstance();
     }
 
     public void handleKeyPress(int keyCode) throws QuitGameException {
@@ -27,7 +28,8 @@ public class CrossyRoadEventHandler {
                     handleMoveInput(keyCode);
             }
         } catch (InvalidKeyPressException e) {
-            handleKeyPress(keyCode);
+            System.out.println("Invalid Key Press");
+            // handleKeyPress(keyCode);
         }
     }
 
@@ -61,7 +63,6 @@ public class CrossyRoadEventHandler {
     private void handleFailedGame(int keyCode) throws InvalidKeyPressException, QuitGameException {
         switch (keyCode) {
             case KeyEvent.VK_R:
-                this.game.setGameStatus("RESTARTING");
                 this.game.setUpCrossyRoad();
                 break;
             case KeyEvent.VK_Q:
@@ -73,8 +74,11 @@ public class CrossyRoadEventHandler {
     }
 
     private void handleMoveInput(int keyCode) {
-        System.out.println("handling move");
+        // System.out.println("handling move");
         this.game.getCrossyRoadPlayer().movePlayer(keyCode);
+        DisplayController.getInstance().updateDisplayIndices();
+        BackGroundPanel.getInstance().repaint();
+        System.out.println("Player now at : "  );
         if (this.game.checkCompletion()) {
             this.game.setGameStatus("COMPLETED");
         }

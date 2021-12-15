@@ -2,9 +2,11 @@ package model;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import persistence.JsonReader;
 import persistence.JsonWriter;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 
 public class Arcade {
@@ -12,6 +14,8 @@ public class Arcade {
     private final List<PlayerProfile> crossyRoadPlayerProfileList;
     private final List<PlayerProfile> memoryPlayerProfileList;
     private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
+
 
     //private JsonReader jsonReader;
 
@@ -25,6 +29,18 @@ public class Arcade {
         this.crossyRoadPlayerProfileList = new ArrayList<>();
         this.memoryPlayerProfileList = new ArrayList<>();
         this.jsonWriter = new JsonWriter(JSON_STORE);
+        this.jsonReader = new JsonReader(JSON_STORE);
+    }
+
+    // MODIFIES: this
+    // EFFECTS: loads workroom from file
+    public void loadArcade() {
+        try {
+            jsonReader.read(this);
+            System.out.println("Loaded Arcade from " + JSON_STORE);
+        } catch (IOException e) {
+            System.out.println("Unable to read from file: " + JSON_STORE);
+        }
     }
 
     public void addPlayerProfile(PlayerProfile newProfile, String gameName) {
@@ -51,10 +67,17 @@ public class Arcade {
 
     // Taken from JSONSerialization
     // EFFECTS: saves the workroom to file
-    public void saveArcade() throws FileNotFoundException {
-        jsonWriter.open();
-        jsonWriter.write(arcadeToJson());
-        jsonWriter.close();
+    public void saveArcade() {
+        try {
+            jsonWriter.open();
+            jsonWriter.write(arcadeToJson());
+            jsonWriter.close();
+            System.out.println("Saved all arcade data to " + JSON_STORE);
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to write to file: " + JSON_STORE);
+        }
+        System.out.println("Quitting Game...");
+        System.exit(0);
     }
 
     public JSONArray arcadeToJson() {
@@ -91,8 +114,12 @@ public class Arcade {
         return jsonProfileArray;
     }
 
-    public void setjsonWriter(JsonWriter writer) {
+    public void setJsonWriter(JsonWriter writer) {
         this.jsonWriter = writer;
+    }
+
+    public JsonReader getJsonReader() {
+        return this.jsonReader;
     }
 
 }

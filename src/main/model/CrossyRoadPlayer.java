@@ -10,13 +10,13 @@ public class CrossyRoadPlayer {
     private int positionY;
     private final String playerName;
     private final Color playerColor = Colors.getRandomColor();
-    private EventLog logger;
+    // private EventLog logger;
 
     public CrossyRoadPlayer(String playerName) {
         this.positionX = ((CrossyRoadGame.GAME_WIDTH / 100) / 2) * 100;
         this.positionY = 0;
         this.playerName = playerName;
-        this.logger = EventLog.getInstance();
+        // this.logger = EventLog.getInstance();
     }
 
     /*
@@ -29,7 +29,8 @@ public class CrossyRoadPlayer {
         } else {
             this.positionX = checkBoundariesAndMove(directionOfMovement, this.positionX);
         }
-        logger.logEvent(new Event("Player moved to X: " + this.positionX + " Y: " + positionY));
+        System.out.println("Player now at X: " + positionX + " Y: " + positionY);
+        // logger.logEvent(new Event("Player moved to X: " + this.positionX + " Y: " + positionY));
     }
 
     /*
@@ -67,6 +68,14 @@ public class CrossyRoadPlayer {
 
     public int getPositionY() {
         return this.positionY;
+    }
+
+    public void setPositionX(int positionX) {
+        this.positionX = positionX;
+    }
+
+    public void setPositionY(int positionY) {
+        this.positionY = positionY;
     }
 
     public String getCrossyRoadPlayerName() {

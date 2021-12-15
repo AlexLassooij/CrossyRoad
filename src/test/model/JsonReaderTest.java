@@ -12,18 +12,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class JsonReaderTest {
     private static final String JSON_STORE = "./data/testReader.json";
+    private Arcade arcade;
     private JsonReader reader;
 
     @BeforeEach
     public void setUpTest() {
-        this.reader = new JsonReader(JSON_STORE);
+        this.arcade = new Arcade();
+        this.reader = this.arcade.getJsonReader();
     }
 
     @Test
     void testReaderNonExistentFile() {
         JsonReader reader = new JsonReader("./data/noSuchFile.json");
         try {
-            reader.read();
+            reader.read(this.arcade);
             fail("IOException expected");
         } catch (IOException e) {
             // pass
@@ -32,9 +34,9 @@ public class JsonReaderTest {
 
     @Test
     void testReaderNoPlayers() {
-        JsonReader emptyReader = new JsonReader("./data/testReaderEmpty.json");
+        this.reader = new JsonReader("./data/testReaderEmpty.json");
         try {
-            Arcade arcade = emptyReader.read();
+            this.reader.read(this.arcade);
             assertEquals(0, arcade.getPlayerProfileList("CROSSYROAD").size());
             assertEquals(0, arcade.getPlayerProfileList("MEMORY").size());
             assertEquals(0, arcade.getPlayerProfileList("TEST").size());
@@ -46,7 +48,7 @@ public class JsonReaderTest {
     @Test
     void testReaderWithPlayers() {
         try {
-            Arcade arcade = reader.read();
+            this.reader.read(this.arcade);
             List<PlayerProfile> crossyroadPlayers = arcade.getPlayerProfileList("CROSSYROAD");
             List<PlayerProfile> memoryPlayers = arcade.getPlayerProfileList("MEMORY");
             assertEquals(2, crossyroadPlayers.size());

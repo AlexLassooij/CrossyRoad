@@ -10,12 +10,13 @@ import java.awt.event.ActionListener;
 
 public class CrossyRoadRun extends JPanel implements ActionListener {
     private final CrossyRoadGame crossyRoadGame;
+    private final BackGroundPanel background;
     private final GameBoard gameBoard;
-    private final JScrollPane scrollPane;
+    // private final JScrollPane scrollPane;
     private final PlayerProfile player;
     private CrossyRoadEventHandler eventHandler;
-    private final Font arcadeFont = new Font("Arial",Font.BOLD, 20);
-    public static final  int MOVE_INTERVAL = 500;
+    public static final int MOVE_INTERVAL = 50;
+    public static final int MOVE_MULTIPLIER = MOVE_INTERVAL / 5;
     private Timer updateTimer;
 
     /*
@@ -26,26 +27,19 @@ public class CrossyRoadRun extends JPanel implements ActionListener {
      *          instantiates a new CrossyRoadGame object
      *          calls addTimer
      */
-    public CrossyRoadRun(PlayerProfile player)  {
-//        ArcadeApp.addCentredString("Would you like to restart at level 1 or continue where you left off ?",
-//                ArcadeApp.COMPONENT_HEIGHT, this, arcadeFont, getFontMetrics(arcadeFont));
-//        add(ArcadeApp.createButton(ArcadeApp.BUTTON_POS_X, ArcadeApp.COMPONENT_HEIGHT * 2,
-//                "Restart", "restartLevel"));
-//        add(ArcadeApp.createButton(ArcadeApp.BUTTON_POS_X, ArcadeApp.COMPONENT_HEIGHT * 2,
-//                "Continue", "continueLevel"));
-//        String choice = "1";
-//        if (player.getLevelAchieved() > 1) {
-//            System.out.println("Would you like to start at level 1 (1) or "
-//                    + "continue where you left off (2) ?");
-//            choice = this.scanner.next();
-//        }
-//        boolean restartLevel = choice.equals("1");
+    public CrossyRoadRun(PlayerProfile player, boolean restartFlag)  {
         this.player = player;
-        this.crossyRoadGame = new CrossyRoadGame(this.player, true);
-        this.gameBoard = new GameBoard(this.crossyRoadGame);
-        this.eventHandler = new CrossyRoadEventHandler(this.crossyRoadGame);
-        this.scrollPane = new CrossyRoadScrollPane(this.gameBoard);
-        add(scrollPane);
+        this.crossyRoadGame = new CrossyRoadGame(this.player, restartFlag);
+        this.background = new BackGroundPanel();
+        this.gameBoard = new GameBoard();
+        setPreferredSize(new Dimension(CrossyRoadGame.GAME_WIDTH, this.crossyRoadGame.getGameHeight()));
+        JLayeredPane mainGamePanel = new JLayeredPane();
+        mainGamePanel.setPreferredSize(new Dimension(CrossyRoadGame.GAME_WIDTH, this.crossyRoadGame.getGameHeight()));
+        mainGamePanel.add(background, 0);
+        mainGamePanel.add(gameBoard, 0);
+        // this.scrollPane = new CrossyRoadScrollPane(mainGamePanel);
+        add(mainGamePanel);
+        this.eventHandler = new CrossyRoadEventHandler();
         setVisible(true);
         addTimer();
     }
@@ -59,7 +53,7 @@ public class CrossyRoadRun extends JPanel implements ActionListener {
         this.updateTimer = new Timer(MOVE_INTERVAL, ae -> {
             if (this.crossyRoadGame.getGameStatus().equals("QUIT")) {
                 stopTimer();
-                setScrollBarToTop();
+                // setScrollBarToTop();
                 System.out.println("game quit");
             }
             update();
@@ -81,31 +75,7 @@ public class CrossyRoadRun extends JPanel implements ActionListener {
      */
     private void update() {
         this.crossyRoadGame.moveCars();
-        if (this.gameBoard.getPreferredSize().getHeight() < this.crossyRoadGame.getGameHeight()) {
-            this.gameBoard.setPreferredSize(new Dimension(CrossyRoadGame.GAME_WIDTH,
-                    this.crossyRoadGame.getGameHeight()));
-            this.gameBoard.revalidate();
-            System.out.println("Resetting gameheight to " + this.crossyRoadGame.getGameHeight());
-        }
         this.gameBoard.repaint();
-        if (this.crossyRoadGame.getGameStatus().equals("ONGOING")) {
-            setScrollBar();
-        }
-    }
-
-    private void setScrollBar() {
-        if (!this.crossyRoadGame.getGameStatus().equals("ONGOING")) {
-            setScrollBarToTop();
-        } else {
-            this.scrollPane.getVerticalScrollBar().setValue(this.scrollPane.getVerticalScrollBar().getMaximum()
-                    - this.crossyRoadGame.getCrossyRoadPlayer().getPositionY() - 400);
-        }
-
-
-    }
-
-    private void setScrollBarToTop() {
-        this.scrollPane.getVerticalScrollBar().setValue(0);
     }
 
     public CrossyRoadGame getCrossyRoadGame() {

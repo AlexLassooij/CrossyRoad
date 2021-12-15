@@ -10,28 +10,45 @@ import java.util.List;
 
 public class GameBoard extends JPanel {
     public static final int PIXELS_PER_UNIT = 100;
-    public static final int INIT_HEIGHT = 700;
+    public static final int NORMAL_PLAYER_POS = CrossyRoadGame.INIT_HEIGHT / 200 * 100;
+    public static final int OFFSET_FROM_PLAYER = 300;
     public static final int TEXT_LEVEL_ONE = 50;
     public static final int TEXT_LEVEL_TWO = 150;
     public static final int TEXT_LEVEL_THREE = 250;
+    public static final int GAME_OBJECT_PADDING = 10;
     private static final String COLLISION = "Game over ! You have collided with a car !";
     private static final String COMPLETION = "Congratulations ! You have completed the level !";
     private static final String CONTINUE = "Press 'C' to continue to the next level";
     private static final String RESTART = "Press 'R' to restart";
     private static final String QUIT = "Press 'Q' to quit";
     private final CrossyRoadGame game;
+    private static GameBoard theBoard;
 
     /*
      * MODIFIES: this
      * EFFECTS: sets the height and width of the gameBoard
      *          instantiates a new 2D String array
      */
-    public GameBoard(CrossyRoadGame game) {
-        this.game = game;
-        int gameWidth = CrossyRoadGame.GAME_WIDTH;
-        setPreferredSize(new Dimension(gameWidth, INIT_HEIGHT));
-        System.out.println((this.game.getGameHeight()));
-        setBackground(Color.PINK);
+    public GameBoard() {
+        this.game = CrossyRoadGame.getInstance();
+        setPanelSize();
+        // setBackground(new Color(139, 195, 200, 200));
+        setOpaque(false);
+    }
+
+    public static GameBoard getInstance() {
+        if (theBoard == null) {
+            theBoard = new GameBoard();
+        }
+        return theBoard;
+    }
+
+    public void setPanelSize() {
+        Dimension size = new Dimension(CrossyRoadGame.GAME_WIDTH, CrossyRoadGame.INIT_HEIGHT);
+        setPreferredSize(size);
+        setMinimumSize(size);
+        setMaximumSize(size);
+        setSize(size);
     }
 
     @Override
@@ -48,29 +65,6 @@ public class GameBoard extends JPanel {
                 displayCompletion(g);
                 break;
         }
-    }
-
-    private void displayFailure(Graphics g) {
-        paintGameBoard(g);
-        Color saved = g.getColor();
-        g.setColor(new Color(0, 0, 0));
-        g.setFont(new Font("Arial", Font.BOLD, 20));
-        FontMetrics fm = g.getFontMetrics();
-        centreString(COLLISION, g, fm, TEXT_LEVEL_ONE);
-        centreString(RESTART, g, fm, TEXT_LEVEL_TWO);
-        centreString(QUIT, g, fm, TEXT_LEVEL_THREE);
-        g.setColor(saved);
-    }
-
-    private void displayCompletion(Graphics g) {
-        Color saved = g.getColor();
-        g.setColor(new Color(0, 0, 0));
-        g.setFont(new Font("Arial",Font.BOLD, 20));
-        FontMetrics fm = g.getFontMetrics();
-        centreString(COMPLETION, g, fm, TEXT_LEVEL_ONE);
-        centreString(CONTINUE, g, fm, TEXT_LEVEL_TWO);
-        centreString(QUIT, g, fm, TEXT_LEVEL_THREE);
-        g.setColor(saved);
     }
 
     // Centres a string on the screen
@@ -96,13 +90,15 @@ public class GameBoard extends JPanel {
     private void paintGameBoard(Graphics g) {
         List<CrossyRoadCar> cars = this.game.getCars();
         CrossyRoadPlayer player = this.game.getCrossyRoadPlayer();
-        drawCars(g, cars);
+        //paintBackground(g);
+        paintCars(g, cars, player);
         paintPlayer(g, player);
     }
 
-    private void drawCars(Graphics g, List<CrossyRoadCar> cars) {
+    private void paintCars(Graphics g, List<CrossyRoadCar> cars, CrossyRoadPlayer player) {
+        // the y coordinate to paint the car on the board, which is not the car's actual position
         for (CrossyRoadCar nextCar : cars) {
-            paintCar(g, nextCar);
+            paintCar(g, nextCar, DisplayController.getInstance().getCarIndex() - nextCar.getCarPositionY());
         }
     }
 
@@ -111,34 +107,24 @@ public class GameBoard extends JPanel {
      * EFFECTS: prints a coloured "o" for each position that the car
      *          occupies on the gameBoard
      */
-    private void paintCar(Graphics g, CrossyRoadCar car) {
+    private void paintCar(Graphics g, CrossyRoadCar car, int carPositionY) {
         int carPositionX = car.getCarPositionX();
-//        System.out.println(positionX);
-        int carPositionY = game.getGameHeight() - car.getCarPositionY();
         int carLength = car.getCarLength();
         String movementDirection = car.getMovementDirection();
         Color previousColor = g.getColor();
         g.setColor(car.getCarColour());
         if (movementDirection.equals("right")) {
-            g.fillRect(carPositionX - (carLength - 1) * PIXELS_PER_UNIT,
-                    carPositionY - PIXELS_PER_UNIT, carLength * PIXELS_PER_UNIT,
-                    PIXELS_PER_UNIT);
+            g.fillRect(carPositionX - carLength * PIXELS_PER_UNIT + GAME_OBJECT_PADDING,
+                    carPositionY + GAME_OBJECT_PADDING, carLength * PIXELS_PER_UNIT - 2 * GAME_OBJECT_PADDING,
+                    PIXELS_PER_UNIT - 2 * GAME_OBJECT_PADDING);
         } else {
-            g.fillRect(carPositionX,
-                    carPositionY - PIXELS_PER_UNIT, carLength * PIXELS_PER_UNIT,
-                    PIXELS_PER_UNIT);
+            g.fillRect(carPositionX + GAME_OBJECT_PADDING,
+                    carPositionY + GAME_OBJECT_PADDING, carLength * PIXELS_PER_UNIT - 2 * GAME_OBJECT_PADDING,
+                    PIXELS_PER_UNIT - 2 * GAME_OBJECT_PADDING);
         }
         g.setColor(previousColor);
     }
 
-
-//    for (int i = 0; i < carLength * PIXELS_PER_UNIT; i += PIXELS_PER_UNIT) {
-//        if (movementDirection.equals("right") && (positionX - i) < gameWidth && (positionX - i) >= 0) {
-//            g.fillRect(positionX, positionY - PIXELS_PER_UNIT, PIXELS_PER_UNIT, PIXELS_PER_UNIT);
-//        } else if (movementDirection.equals("left") && (positionX + i) < gameWidth && (positionX + i) >= 0) {
-//            g.fillRect(positionX, positionY - PIXELS_PER_UNIT, PIXELS_PER_UNIT, PIXELS_PER_UNIT);
-//        }
-//    }
     /*
      * MODIFIES: this
      * EFFECTS: prints an "x" on the position that the player
@@ -148,8 +134,58 @@ public class GameBoard extends JPanel {
         Color previousColor = g.getColor();
         g.setColor(player.getPlayerColor());
         int positionX = player.getPositionX();
-        int positionY = game.getGameHeight() - player.getPositionY();
-        g.fillRect(positionX, positionY - PIXELS_PER_UNIT, PIXELS_PER_UNIT, PIXELS_PER_UNIT);
+        g.fillRect(positionX + GAME_OBJECT_PADDING, DisplayController.getInstance().getPlayerIndex()
+                        + GAME_OBJECT_PADDING,
+                PIXELS_PER_UNIT - 2 * GAME_OBJECT_PADDING, PIXELS_PER_UNIT - 2 * GAME_OBJECT_PADDING);
         g.setColor(previousColor);
     }
+
+    private void displayFailure(Graphics g) {
+        paintGameBoard(g);
+        Color saved = g.getColor();
+        g.setColor(new Color(0, 0, 0));
+        g.setFont(new Font("Arial", Font.BOLD, 20));
+        FontMetrics fm = g.getFontMetrics();
+        centreString(COLLISION, g, fm, TEXT_LEVEL_ONE);
+        centreString(RESTART, g, fm, TEXT_LEVEL_TWO);
+        centreString(QUIT, g, fm, TEXT_LEVEL_THREE);
+        g.setColor(saved);
+    }
+
+    private void displayCompletion(Graphics g) {
+        paintGameBoard(g);
+        Color saved = g.getColor();
+        g.setColor(new Color(0, 0, 0));
+        g.setFont(new Font("Arial",Font.BOLD, 20));
+        FontMetrics fm = g.getFontMetrics();
+        centreString(COMPLETION, g, fm, TEXT_LEVEL_ONE);
+        centreString(CONTINUE, g, fm, TEXT_LEVEL_TWO);
+        centreString(QUIT, g, fm, TEXT_LEVEL_THREE);
+        g.setColor(saved);
+    }
+
+    // old section of code that used to be in paintCars
+    // case 1 : player is neither near top or bottom of game boundary and is being painted in center of
+//            // screen regardless of position
+//            if (playerPositionY >= NORMAL_PLAYER_POS && playerPositionY < game.getGameHeight() - NORMAL_PLAYER_POS) {
+//                if ((playerPositionY - OFFSET_FROM_PLAYER) <= nextCar.getCarPositionY()
+//                        && nextCar.getCarPositionY() <= (playerPositionY + OFFSET_FROM_PLAYER)) {
+//                    int carPositionY =
+//                            NORMAL_PLAYER_POS + playerPositionY - nextCar.getCarPositionY();
+//                    paintCar(g, nextCar, DisplayController.getInstance().getCarIndex());
+//                }
+//            // case 2 : if player is near bottom of screen, display cars from player's level until top of screen
+//            } else if (playerPositionY < NORMAL_PLAYER_POS) {
+//                if (nextCar.getCarPositionY() < CrossyRoadGame.INIT_HEIGHT) {
+//                    int carPositionY = game.getGameHeight()  - PIXELS_PER_UNIT
+//                            - (game.getGameHeight() - CrossyRoadGame.INIT_HEIGHT) - nextCar.getCarPositionY();
+//                    paintCar(g, nextCar, DisplayController.getInstance().getCarIndex());
+//                }
+//            // case 3:  player is near top,
+//            } else {
+//                if (nextCar.getCarPositionY() >= game.getGameHeight() - CrossyRoadGame.INIT_HEIGHT) {
+//                    int carPositionY = game.getGameHeight() - PIXELS_PER_UNIT - nextCar.getCarPositionY();
+//                    paintCar(g, nextCar, DisplayController.getInstance().getCarIndex());
+//                }
+//            }
 }

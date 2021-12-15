@@ -2,23 +2,13 @@
     {
         "Profiles": [
             {
-                "levelAchieved": 12,
+                "levelAchieved": 3,
                 "playerName": "alex",
                 "pointsAchieved": 0
             },
             {
                 "levelAchieved": 1,
                 "playerName": "testplayer",
-                "pointsAchieved": 0
-            },
-            {
-                "levelAchieved": 1,
-                "playerName": "test01",
-                "pointsAchieved": 0
-            },
-            {
-                "levelAchieved": 3,
-                "playerName": "test3",
                 "pointsAchieved": 0
             }
         ],

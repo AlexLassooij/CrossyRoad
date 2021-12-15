@@ -8,27 +8,25 @@ import persistence.JsonReader;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
 public class ArcadeApp extends JFrame implements ActionListener {
-    private static final String JSON_STORE = "./data/arcade.json";
     public static final int BUTTON_WIDTH = 400;
     public static final int BUTTON_POS_X = (CrossyRoadGame.GAME_WIDTH - BUTTON_WIDTH) / 2;
     public static final int COMPONENT_HEIGHT = 100;
     public static final int TEXT_AREA_PADDING = 100;
-    private final JsonReader jsonReader;
     private Arcade arcade;
     private CrossyRoadEventHandler eventHandler;
     private CrossyRoadRun runner;
     private String newPlayerName = null;
     private String newGameMode = null;
+    private PlayerProfile chosenPlayer;
+    private boolean restartFlag = false;
     private final Font arcadeFont = new Font("Arial",Font.BOLD, 20);
+    private KeyHandler keyHandler;
     //private JsonReader jsonReader;
 
     /*
@@ -42,15 +40,13 @@ public class ArcadeApp extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setUndecorated(false);
         setBackground(Color.white);
-        setSize(CrossyRoadGame.GAME_WIDTH, GameBoard.INIT_HEIGHT);
+        setSize(CrossyRoadGame.GAME_WIDTH, CrossyRoadGame.INIT_HEIGHT);
         centreOnScreen();
         initMenu();
-        //add(this.initMenu, BorderLayout.CENTER);
         setVisible(true);
-        //displayOptions();
-        jsonReader = new JsonReader(JSON_STORE);
-        loadArcade();
         addKeyListener(new KeyHandler());
+        this.arcade = new Arcade();
+        this.arcade.loadArcade();
     }
 
     /*
@@ -87,6 +83,7 @@ public class ArcadeApp extends JFrame implements ActionListener {
 
     private void playCrossyRoad() {
         getContentPane().removeAll();
+        getContentPane().setBackground(Color.white);
         addCentredTextArea("Who is playing",
                 COMPONENT_HEIGHT, arcadeFont, getFontMetrics(arcadeFont));
         List<PlayerProfile> playerList = this.arcade.getPlayerProfileList("CROSSYROAD");
@@ -105,6 +102,7 @@ public class ArcadeApp extends JFrame implements ActionListener {
      */
     public void createNewProfile() {
         getContentPane().removeAll();
+        getContentPane().setBackground(Color.white);
         addCentredTextField("What is your name ?",
                 COMPONENT_HEIGHT, arcadeFont, getFontMetrics(arcadeFont), "newPlayerName");
         addCentredTextArea("What game will this player be playing ?",
@@ -119,6 +117,7 @@ public class ArcadeApp extends JFrame implements ActionListener {
 
     private void addProfile() {
         getContentPane().removeAll();
+        getContentPane().setBackground(Color.white);
         this.arcade.addPlayerProfile(new PlayerProfile(newPlayerName), newGameMode);
         addCentredTextArea("New profile added for " + newPlayerName + "under" + newGameMode,
                 COMPONENT_HEIGHT, arcadeFont, getFontMetrics(arcadeFont));
@@ -126,43 +125,53 @@ public class ArcadeApp extends JFrame implements ActionListener {
         this.newGameMode = null;
         repaint();
         initMenu();
+    }
 
+    private void crossyRoadPlayerSelection(String label) {
+        if (this.arcade.getPlayerProfileList("CROSSYROAD").stream()
+                .anyMatch(o -> o.getPlayerName().equals(label))) {
+            this.chosenPlayer =
+                    this.arcade.getPlayerProfileList("CROSSYROAD").stream()
+                            .filter(o -> o.getPlayerName().equals(label)).findFirst().get();
+            restartLevel();
+        }
+    }
+
+    private void restartLevel() {
+        getContentPane().removeAll();
+        getContentPane().setBackground(Color.white);
+        addCentredTextField("Would you like to restart at level 1 or continue where you left off ?",
+                COMPONENT_HEIGHT, arcadeFont, getFontMetrics(arcadeFont), "newPlayerName");
+        addCentredButton(BUTTON_POS_X, 2 * COMPONENT_HEIGHT, "Yes",
+                "restartLevel");
+        addCentredButton(BUTTON_POS_X, 3 * COMPONENT_HEIGHT, "No",
+                "restartLevel");
+        repaint();
     }
 
     /*
      * EFFECTS: instantiates a new CrossyRoadRun object
      */
-    private void startCrossyRoad(PlayerProfile player) {
+    private void startCrossyRoad() {
         getContentPane().removeAll();
-        this.runner = new CrossyRoadRun(player);
+//        this.keyHandler = new KeyHandler();
+//        addKeyListener(this.keyHandler);
+        this.runner = new CrossyRoadRun(chosenPlayer, restartFlag);
         add(runner);
         pack();
         repaint();
+
         // instead, add arcadeTimer that will display arcade menu if gameStatus is quit
     }
 
-    // Taken from JSONSerialization
-    // EFFECTS: saves the workroom to file
-    private void saveArcade() {
-        try {
-            this.arcade.saveArcade();
-            System.out.println("Saved all arcade data to " + JSON_STORE);
-        } catch (FileNotFoundException e) {
-            System.out.println("Unable to write to file: " + JSON_STORE);
-        }
-
-        System.out.println("Quitting Game...");
-        System.exit(0);
-    }
-
-    // MODIFIES: this
-    // EFFECTS: loads workroom from file
-    private void loadArcade() {
-        try {
-            this.arcade = jsonReader.read();
-            System.out.println("Loaded Arcade from " + JSON_STORE);
-        } catch (IOException e) {
-            System.out.println("Unable to read from file: " + JSON_STORE);
+    private class KeyHandler extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            try {
+                runner.getEventHandler().handleKeyPress(e.getKeyCode());
+            } catch (QuitGameException ex) {
+                initMenu();
+            }
         }
     }
 
@@ -214,28 +223,6 @@ public class ArcadeApp extends JFrame implements ActionListener {
         add(newTextField);
     }
 
-    private void crossyRoadPlayerSelection(String label) {
-        if (this.arcade.getPlayerProfileList("CROSSYROAD").stream()
-                .anyMatch(o -> o.getPlayerName().equals(label))) {
-            PlayerProfile chosenPlayer =
-                    this.arcade.getPlayerProfileList("CROSSYROAD").stream()
-                            .filter(o -> o.getPlayerName().equals(label)).findFirst().get();
-            startCrossyRoad(chosenPlayer);
-        }
-    }
-
-    private class KeyHandler extends KeyAdapter {
-        @Override
-        public void keyPressed(KeyEvent e) {
-            try {
-                runner.getEventHandler().handleKeyPress(e.getKeyCode());
-            } catch (QuitGameException ex) {
-                printEventLog();
-                initMenu();
-            }
-        }
-    }
-
     private void printEventLog() {
         for (Event nextEvent : EventLog.getInstance()) {
             System.out.println(nextEvent);
@@ -264,7 +251,7 @@ public class ArcadeApp extends JFrame implements ActionListener {
                 playGame();
                 break;
             case "exit":
-                saveArcade();
+                this.arcade.saveArcade();
                 break;
             case "crossyRoadSelection":
                 crossyRoadPlayerSelection(label);
@@ -286,6 +273,11 @@ public class ArcadeApp extends JFrame implements ActionListener {
                 if (label.equals("CROSSYROAD")) {
                     playCrossyRoad();
                 }
+                break;
+            case "restartLevel":
+                this.restartFlag = label.equals("Yes");
+                startCrossyRoad();
+                break;
         }
     }
 }
