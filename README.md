@@ -1,6 +1,9 @@
 # Crossy Road
 
-https://user-images.githubusercontent.com/71570400/147900024-805dbb27-ed44-4b20-9eb6-916b770aa53e.mov <br>
+
+https://user-images.githubusercontent.com/71570400/147901375-ed91c40a-83d2-4b8d-80f9-80eba9fb4201.mp4
+
+
 (Pardon the laggy video)
 
 
