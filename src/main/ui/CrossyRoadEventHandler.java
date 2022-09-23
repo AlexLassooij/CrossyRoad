@@ -78,7 +78,6 @@ public class CrossyRoadEventHandler {
         this.game.getCrossyRoadPlayer().movePlayer(keyCode);
         DisplayController.getInstance().updateDisplayIndices();
         BackGroundPanel.getInstance().repaint();
-        System.out.println("Player now at : "  );
         if (this.game.checkCompletion()) {
             this.game.setGameStatus("COMPLETED");
         }

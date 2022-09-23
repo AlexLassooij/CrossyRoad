@@ -13,7 +13,7 @@ public enum Colors {
     PURPLE(100, 0, 180)
     ;
 
-    private final Color color;
+    public final Color color;
 
     Colors(int r, int g, int b) {
         this.color = new Color(r, g, b);

@@ -89,25 +89,17 @@ public class CrossyRoadGame {
         generateCars(this.numRowsWithCars);
         DisplayController.getInstance().updateDisplayIndices();
         BackGroundPanel.getInstance().repaint();
-        System.out.println("Resetting game height to " + gameHeight);
         this.gameStatus = "ONGOING";
     }
 
     /*
-     * REQUIRES: numCars >= 1
+
      * MODIFIES: this
-     * EFFECTS: creates a new Y coordinate list that will hold
-     *          all non-occupied Y coordinates
-     *          creates a new car length list that will hold
-     *          all allowed car lengths
-     *          iteratively instantiates new CrossyRoadCar objects:
-     *              generates a new Hashtable with randomized car data that
-     *              is assigned to the starting position, car length and velocity
-     *              and sets the movementDirection to "right" if car is starting
-     *              on left side or to "left" if car is starting on right side
+     * EFFECTS: iteratively instantiates new CrossyRoadCar objects, one row
+                at a time. If the difficulty of the current level allows,
+                more than one car will be generated per row
+     *
      *          adds the new CrossyRoadObject to cars
-     *          if all possible Y coordinates have been taken, a new list
-     *          is created
      *
      */
     public void generateCars(int numCars) {
@@ -117,45 +109,13 @@ public class CrossyRoadGame {
         }
     }
 
-    /*
-     * REQUIRES:  0 <= formerPositionY < gameHeight
-     * MODIFIES: this
-     * EFFECTS: creates a new Y coordinate list that will hold
-     *          all non-occupied Y coordinates
-     *          creates a new car length list that will hold
-     *          all allowed car lengths
-     *          generates a new car with this information
-     *          if the number of cars exceeds the game's height (impossible with
-     *          current configuration but subject to change), positionY will
-     *          be the same as the car it is replacing, or else positionY will
-     *          be assigned a randomized value
-     *
-     *          returns a new CrossyRoadCar object
-     */
-    public CrossyRoadCar replaceCar(CrossyRoadCar prevCar) {
-        String movementDirection = prevCar.getMovementDirection();
-
-        int carLength = getRandomCarLength();
-        int positionY = prevCar.getCarPositionY();
-        int velocity = prevCar.getVelocity();
-        int carIdentifier = prevCar.getCarIdentifier();
-        int positionX;
-        if (movementDirection.equals("right")) {
-            positionX = 0;
-        } else {
-            positionX = GAME_WIDTH;
-        }
-        return new CrossyRoadCar(positionX, positionY, velocity, carLength, carIdentifier,
-                0, movementDirection);
-    }
-
-
     private void generateCarRow() {
         int positionX;
-        Random rand = new Random();
         String movementDirection = getRandomDirection();
         int positionY = getRandomYPosition();
         int velocity = getRandomVelocity();
+        int delayTime = GAME_WIDTH / (this.carsPerRow * 2) + (int)(Math.random()
+                * (GAME_WIDTH / (2 * this.carsPerRow)));
         for (int k = 0; k < carsPerRow; k++) {
             int carLength = getRandomCarLength();
             if (movementDirection.equals("right")) {
@@ -163,10 +123,9 @@ public class CrossyRoadGame {
             } else {
                 positionX = GAME_WIDTH;
             }
-            int delayTime = Math.max(GAME_WIDTH / (2 * CrossyRoadRun.MOVE_MULTIPLIER),
-                    rand.nextInt(2 * GAME_WIDTH / CrossyRoadRun.MOVE_MULTIPLIER));
+
             cars.add(new CrossyRoadCar(positionX, positionY, velocity, carLength, cars.size() + 1,
-                    delayTime * (k + 1), movementDirection));
+                    delayTime * (k), movementDirection));
         }
     }
 
@@ -211,6 +170,31 @@ public class CrossyRoadGame {
     }
 
     /*
+     * MODIFIES: this
+     * EFFECTS: creates a new car with same velocity, y position, movement direction
+     *          and identifier as prev car. The car spawns at the default spawning point
+     *          corresponding to its movement direction
+     *
+     *          returns a new CrossyRoadCar object
+     */
+    public CrossyRoadCar replaceCar(CrossyRoadCar prevCar) {
+        String movementDirection = prevCar.getMovementDirection();
+
+        int carLength = getRandomCarLength();
+        int positionY = prevCar.getCarPositionY();
+        int velocity = prevCar.getVelocity();
+        int carIdentifier = prevCar.getCarIdentifier();
+        int positionX;
+        if (movementDirection.equals("right")) {
+            positionX = 0;
+        } else {
+            positionX = GAME_WIDTH;
+        }
+        return new CrossyRoadCar(positionX, positionY, velocity, carLength, carIdentifier,
+                0, movementDirection);
+    }
+
+    /*
      * REQUIRES: numCars >= 1
      * MODIFIES: this
      * EFFECTS: for each car in cars, calls the car's moveCar method in order
@@ -226,7 +210,6 @@ public class CrossyRoadGame {
      *          if so, replaceCar is called in order to replace it
      */
     public void moveCars() {
-
         for (CrossyRoadCar nextCar : this.cars) {
             nextCar.moveCar();
             if (checkCollision(nextCar)) {
@@ -244,23 +227,21 @@ public class CrossyRoadGame {
      */
     public boolean checkCollision(CrossyRoadCar car) {
         int boxSize = GameBoard.PIXELS_PER_UNIT;
+        int carLength = car.getCarLength();
         int carPositionX = car.getCarPositionX();
+        if (car.getMovementDirection().equals("right")) {
+            carPositionX -= carLength * boxSize;
+        }
         int carPositionY = car.getCarPositionY();
         // position as displayed on JPanel
         int displayPositionY = this.gameHeight - carPositionY;
-        int carLength = car.getCarLength();
         if (carPositionY == this.crossyRoadPlayer.getPositionY()) {
             int playerPositionX = this.crossyRoadPlayer.getPositionX();
             Rectangle crossyRoadPlayerBoundary = new Rectangle(playerPositionX,
                     displayPositionY - boxSize, boxSize, boxSize);
-            Rectangle carBoundary = new Rectangle(carPositionX - carLength * boxSize,
+            Rectangle carBoundary = new Rectangle(carPositionX,
                     displayPositionY - boxSize, carLength * boxSize,
                     boxSize);
-            if (car.getMovementDirection().equals("left")) {
-                carBoundary = new Rectangle(carPositionX,
-                        displayPositionY - boxSize, carLength * boxSize,
-                        boxSize);
-            }
             return carBoundary.intersects(crossyRoadPlayerBoundary);
         }
         return false;
@@ -281,6 +262,7 @@ public class CrossyRoadGame {
         List<CrossyRoadCar> modifiedList = new ArrayList<>(this.cars);
         // right-bound car : headPositionX will be > GAME_WIDTH
         // check if left-hand sections of car are still within boundaries
+        // cars start with head at 0 or GAME_WIDTH
         for (CrossyRoadCar car : this.cars) {
             int carPositionX = car.getCarPositionX();
             int carLength = car.getCarLength();
@@ -292,16 +274,9 @@ public class CrossyRoadGame {
                 modifiedList.add(replaceCar(car));
             }
             // remove cars with length > 1 when they full leave the game's boundary
-            if (carPositionX >= GAME_WIDTH + GameBoard.PIXELS_PER_UNIT
-                    || carPositionX < -1 * GameBoard.PIXELS_PER_UNIT) {
-                String movementDirection = car.getMovementDirection();
-                if (movementDirection.equals("right")
-                        && carPositionX - carLength * GameBoard.PIXELS_PER_UNIT >= GAME_WIDTH) {
-                    modifiedList.remove(car);
-                } else if (movementDirection.equals("left")
-                        && carPositionX + (carLength) * GameBoard.PIXELS_PER_UNIT < 0) {
-                    modifiedList.remove(car);
-                }
+            if (carPositionX - carLength * GameBoard.PIXELS_PER_UNIT >= GAME_WIDTH
+                    || carPositionX + carLength * GameBoard.PIXELS_PER_UNIT < 0) {
+                modifiedList.remove(car);
             }
         }
         this.cars = modifiedList;
@@ -367,30 +342,4 @@ public class CrossyRoadGame {
     public void setGameStatus(String gameStatus) {
         this.gameStatus = gameStatus;
     }
-
-    /*
-     * REQUIRES: car is a valid CrossyRoad object
-     * EFFECTS: returns true if all parts of the car are no longer within
-     *          the game's boundaries
-     *          returns false otherwise
-     */
-//    public boolean isCarOutOfBoundary(CrossyRoadCar car) {
-//        int carPositionX = car.getCarPositionX();
-//        int carLength = car.getCarLength();
-//
-//        // right-bound car : headPositionX will be > GAME_WIDTH
-//        // check if left-hand sections of car are still within boundaries
-//        if (carPositionX >= GAME_WIDTH + GameBoard.PIXELS_PER_UNIT || carPositionX < -1 * GameBoard.PIXELS_PER_UNIT) {
-//            if (carLength == 1) {
-//                return true;
-//            }
-//            String movementDirection = car.getMovementDirection();
-//            if (movementDirection.equals("right")) {
-//                return carPositionX - (carLength - 1) * GameBoard.PIXELS_PER_UNIT >= GAME_WIDTH;
-//            } else if (movementDirection.equals("left")) {
-//                return carPositionX + (carLength) * GameBoard.PIXELS_PER_UNIT < 0;
-//            }
-//        }
-//        return false;
-//    }
 }

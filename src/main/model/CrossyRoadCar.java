@@ -51,8 +51,6 @@ public class CrossyRoadCar {
         } else {
             this.headPositionX += this.velocity * CrossyRoadRun.MOVE_MULTIPLIER;
         }
-//        logger.logEvent(new Event("Car " + this.carIdentifier
-//                + " moved to X: " + this.headPositionX + " Y: " + headPositionY));
     }
 
     /*

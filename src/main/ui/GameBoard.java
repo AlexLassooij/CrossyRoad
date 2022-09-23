@@ -1,11 +1,16 @@
 package ui;
 
+import model.Colors;
 import model.CrossyRoadCar;
 import model.CrossyRoadGame;
 import model.CrossyRoadPlayer;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class GameBoard extends JPanel {
@@ -16,6 +21,8 @@ public class GameBoard extends JPanel {
     public static final int TEXT_LEVEL_TWO = 150;
     public static final int TEXT_LEVEL_THREE = 250;
     public static final int GAME_OBJECT_PADDING = 10;
+    private static final String CHICKEN_PATH = "./data/images/chicken.png";
+    private BufferedImage chicken;
     private static final String COLLISION = "Game over ! You have collided with a car !";
     private static final String COMPLETION = "Congratulations ! You have completed the level !";
     private static final String CONTINUE = "Press 'C' to continue to the next level";
@@ -32,8 +39,12 @@ public class GameBoard extends JPanel {
     public GameBoard() {
         this.game = CrossyRoadGame.getInstance();
         setPanelSize();
-        // setBackground(new Color(139, 195, 200, 200));
         setOpaque(false);
+        try {
+            chicken = ImageIO.read(new File(CHICKEN_PATH));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static GameBoard getInstance() {
@@ -134,16 +145,21 @@ public class GameBoard extends JPanel {
         Color previousColor = g.getColor();
         g.setColor(player.getPlayerColor());
         int positionX = player.getPositionX();
-        g.fillRect(positionX + GAME_OBJECT_PADDING, DisplayController.getInstance().getPlayerIndex()
+//        g.fillRect(positionX + GAME_OBJECT_PADDING, DisplayController.getInstance().getPlayerIndex()
+//                        + GAME_OBJECT_PADDING,
+//                PIXELS_PER_UNIT - 2 * GAME_OBJECT_PADDING, PIXELS_PER_UNIT - 2 * GAME_OBJECT_PADDING);
+        
+        g.drawImage(chicken,positionX + GAME_OBJECT_PADDING, DisplayController.getInstance().getPlayerIndex()
                         + GAME_OBJECT_PADDING,
-                PIXELS_PER_UNIT - 2 * GAME_OBJECT_PADDING, PIXELS_PER_UNIT - 2 * GAME_OBJECT_PADDING);
+                PIXELS_PER_UNIT - 2 * GAME_OBJECT_PADDING, PIXELS_PER_UNIT - 2 * GAME_OBJECT_PADDING, null);
+
         g.setColor(previousColor);
     }
 
     private void displayFailure(Graphics g) {
         paintGameBoard(g);
         Color saved = g.getColor();
-        g.setColor(new Color(0, 0, 0));
+        g.setColor(Colors.TURQUOISE.color);
         g.setFont(new Font("Arial", Font.BOLD, 20));
         FontMetrics fm = g.getFontMetrics();
         centreString(COLLISION, g, fm, TEXT_LEVEL_ONE);
@@ -155,7 +171,7 @@ public class GameBoard extends JPanel {
     private void displayCompletion(Graphics g) {
         paintGameBoard(g);
         Color saved = g.getColor();
-        g.setColor(new Color(0, 0, 0));
+        g.setColor(Colors.TURQUOISE.color);
         g.setFont(new Font("Arial",Font.BOLD, 20));
         FontMetrics fm = g.getFontMetrics();
         centreString(COMPLETION, g, fm, TEXT_LEVEL_ONE);

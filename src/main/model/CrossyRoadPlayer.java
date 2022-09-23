@@ -24,7 +24,8 @@ public class CrossyRoadPlayer {
      * EFFECTS: moves the player up, down, left or right by one unit according to "directionOfMovement"
      */
     public void movePlayer(int directionOfMovement) {
-        if (directionOfMovement == KeyEvent.VK_W || directionOfMovement == KeyEvent.VK_S) {
+        if (directionOfMovement == KeyEvent.VK_W || directionOfMovement == KeyEvent.VK_S
+                || directionOfMovement == KeyEvent.VK_UP || directionOfMovement == KeyEvent.VK_DOWN) {
             this.positionY = checkBoundariesAndMove(directionOfMovement, this.positionY);
         } else {
             this.positionX = checkBoundariesAndMove(directionOfMovement, this.positionX);
@@ -43,15 +44,19 @@ public class CrossyRoadPlayer {
     public int checkBoundariesAndMove(int keyCode, int position) {
         switch (keyCode) {
             case KeyEvent.VK_W:
+            case KeyEvent.VK_UP:
                 return position + GameBoard.PIXELS_PER_UNIT;
             case KeyEvent.VK_S:
+            case KeyEvent.VK_DOWN:
             case KeyEvent.VK_A:
+            case KeyEvent.VK_LEFT:
                 if (position == 0) {
                     return position;
                 } else {
                     return position - GameBoard.PIXELS_PER_UNIT;
                 }
             case KeyEvent.VK_D:
+            case KeyEvent.VK_RIGHT:
                 if (position >= CrossyRoadGame.GAME_WIDTH - GameBoard.PIXELS_PER_UNIT) {
                     return CrossyRoadGame.GAME_WIDTH - GameBoard.PIXELS_PER_UNIT;
                 } else {

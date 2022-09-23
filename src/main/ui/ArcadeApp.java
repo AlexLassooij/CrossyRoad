@@ -12,6 +12,7 @@ import java.awt.event.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public class ArcadeApp extends JFrame implements ActionListener {
     public static final int BUTTON_WIDTH = 400;
@@ -130,9 +131,9 @@ public class ArcadeApp extends JFrame implements ActionListener {
     private void crossyRoadPlayerSelection(String label) {
         if (this.arcade.getPlayerProfileList("CROSSYROAD").stream()
                 .anyMatch(o -> o.getPlayerName().equals(label))) {
-            this.chosenPlayer =
-                    this.arcade.getPlayerProfileList("CROSSYROAD").stream()
-                            .filter(o -> o.getPlayerName().equals(label)).findFirst().get();
+            Optional<PlayerProfile> chosenPlayer = this.arcade.getPlayerProfileList("CROSSYROAD").stream()
+                    .filter(o -> o.getPlayerName().equals(label)).findFirst();
+            chosenPlayer.ifPresent(playerProfile -> this.chosenPlayer = playerProfile);
             restartLevel();
         }
     }
@@ -185,7 +186,7 @@ public class ArcadeApp extends JFrame implements ActionListener {
 
     public void addCentredButton(int positionX, int positionY, String description, String actionCommand) {
         JButton newButton = new JButton(description);
-        newButton.setForeground(Color.pink);
+        newButton.setForeground(new Color(139, 190, 0));
         newButton.setBackground(Color.white);
         newButton.setBounds(positionX, positionY, BUTTON_WIDTH, COMPONENT_HEIGHT);
         newButton.setSize(BUTTON_WIDTH, COMPONENT_HEIGHT);
